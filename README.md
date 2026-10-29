@@ -51,7 +51,7 @@
 
 ## 🚀 Overview & The Problem
 
-Modern software development teams trigger thousands of CI/CD builds and model-training jobs every single day. Computing in data centers powered by fossil-fuel electricity silently produces massive **Scope 3 Category 11 greenhouse gas emissions** ($gCO_2eq/kWh$).
+Modern software development teams trigger thousands of CI/CD builds and model-training jobs every single day. Computing in data centers powered by fossil-fuel electricity silently produces massive **Scope 3 Category 1 greenhouse gas emissions** ($gCO_2eq/kWh$) from upstream cloud services.
 
 Traditional CI/CD tools (GitHub Actions, GitLab CI, Jenkins) execute workloads blindly in static default regions regardless of whether the local power grid is currently burning coal or powered by wind/hydro.
 
@@ -127,7 +127,7 @@ OptiGreen is engineered for modern enterprise cloud environments with production
 * Automated container build and release pipeline defined in [`cloudbuild.yaml`](cloudbuild.yaml).
 * Stages:
   1. `npm ci` & strict TypeScript compile check (`tsc --noEmit`).
-  2. Full Vitest test suite execution (`vitest run` — all 58 unit, integration, and conformance tests must pass).
+  2. Full Vitest test suite execution (`vitest run` — all 68 unit, integration, and conformance tests must pass).
   3. Production client and server compilation (`npm run build`).
   4. Docker container build and push to Google Cloud Artifact Registry / Container Registry (`gcr.io/$PROJECT_ID/optigreen-scheduler:$COMMIT_SHA`).
   5. Automated zero-downtime deployment to Google Cloud Run (`--region=us-central1`, `--platform=managed`, `--allow-unauthenticated`).
@@ -151,7 +151,7 @@ OptiGreen is engineered for modern enterprise cloud environments with production
 
 ### 1. The Scale of the Problem
 * Global data center electricity consumption exceeded **460 TWh** in 2024 and is projected to surpass **1,000 TWh by 2026** (comparable to the electricity consumption of Japan), driven by cloud CI/CD pipelines, container compilation, and continuous AI model fine-tuning.
-* Under the European Union **Corporate Sustainability Reporting Directive (CSRD)** and global ESG mandates, enterprise software companies must audit and report **Scope 3 Category 11 (Use of Cloud Services)** emissions. Non-compliance carries severe regulatory financial penalties and investor divestment risks.
+* Under the European Union **Corporate Sustainability Reporting Directive (CSRD)** and global ESG mandates, enterprise software companies must audit and report **Scope 3 Category 1 (Purchased Cloud Services & Compute)** emissions. Non-compliance carries severe regulatory financial penalties and investor divestment risks.
 
 ### 2. Mathematical Proof: How Teams Cut Emissions by 35% – 60%
 Carbon savings are calculated using the official **Greenhouse Gas (GHG) Protocol Scope 3** methodology:
@@ -215,7 +215,7 @@ $$\text{Emissions } (gCO_2eq) = \text{Compute Duration (h)} \times \text{Server 
 | :--- | :--- | :--- | :--- |
 | **Grid Awareness** | ❌ Blind execution in fixed region | ⚠️ Post-hoc static reporting after emissions occurred | ✅ **Pre-emptive, real-time grid interception** |
 | **Orchestration** | ❌ Run immediately or manual trigger | ❌ Read-only metric dashboards | ✅ **Automated hold, route, speculative build, and SLA escalation** |
-| **Reasoning Engine** | ❌ Static yaml configurations | ❌ Hardcoded threshold rules | ✅ **Google Gemini 3 multimodal reasoning with strict JSON schema** |
+| **Reasoning Engine** | ❌ Static yaml configurations | ❌ Hardcoded threshold rules | ✅ **Google Gemini 3 active tool-calling & structured JSON schema reasoning** |
 | **Multi-Objective Solver** | ❌ None | ❌ Single metric | ✅ **Pareto Frontier (Carbon vs. Cost vs. Latency)** |
 | **Compliance Audit** | ❌ Plain text build logs | ⚠️ Unsigned CSV exports | ✅ **Tamper-evident SHA-256 cryptographic hash-chained ledger** |
 
@@ -268,7 +268,7 @@ OptiGreen is built for the **Build with Gemini — Chennai** hackathon, targetin
 ---
 
 ### 1. Server-Side Security Architecture (Zero Client-Side Leakage)
-A critical security anti-pattern flagged by Markwise evaluators is invoking AI SDKs from the browser, which leaks secret API keys in client-side bundles.
+A critical security anti-pattern in production AI systems is invoking AI SDKs from the browser, which leaks secret API keys in client-side bundles.
 * **100% Backend Isolation:** In OptiGreen, `@google/genai` is strictly isolated within the Node.js Express server ([`server.ts`](server.ts)).
 * `process.env.GEMINI_API_KEY` is loaded exclusively into server memory and never delivered to the client bundle.
 * The frontend React application interacts with Gemini through authenticated `/api/ai-optimize` and `/api/gemini/copilot` gateways.
@@ -285,7 +285,7 @@ A naive AI architecture forces every single git commit to block on a 1500ms LLM 
   3. Mathematical Pareto boundary trade-offs between cross-region data transfer egress costs and carbon savings.
   Gemini outputs structured, actionable routing vectors, optimal target regions, and concrete migration steps that dispatchers execute.
 
-> **Why this matters for Markwise evaluation:** Blending fast deterministic heuristic checks with specialized AI reasoning prevents unnecessary LLM API calls, eliminates developer latency bottlenecks, and provides scalable, production-grade cloud orchestration.
+> **Enterprise Architectural Rationale:** Blending fast deterministic heuristic checks with specialized AI reasoning prevents unnecessary LLM API calls, eliminates developer latency bottlenecks, and provides scalable, production-grade cloud orchestration.
 
 ### 3. Deterministic Structured JSON Schema Enforcement
 Unlike naive implementations that rely on fragile regular expressions (`.replace(/```json/g, '')`), OptiGreen enforces **Google Gemini's native structured JSON outputs** via `Type.OBJECT`:
@@ -530,20 +530,21 @@ OptiGreen includes production-grade integration artifacts directly inside the re
 
 ## 🧪 Testing & Reliability
 
-The platform contains a dedicated **Vitest 3** test suite located in `test/`, with **64 passed unit, integration, and conformance tests across 7 test suites**:
+The platform contains a dedicated **Vitest 3** test suite located in `test/`, with **68 passed unit, integration, and conformance tests across 8 test suites**:
 
 ```bash
 npm test
 ```
 
 ### Verified Test Suites:
-* **`test/persistentDatabase.test.ts` (4 tests)**: Verifies that queued workloads, dispatch activities, and system thresholds persist durably across server reboots, container restarts, and simulated process crashes via ACID-safe atomic writes.
 * **`test/conformanceSuite.test.ts` (20 tests)**: Evaluates the complete **OptiGreen Semantic Contract (T01 – T20)**, validating the 9 record types (`workload`, `observation`, `candidate`, `constraint`, `objective`, `decision`, `action`, `outcome`, `audit`), `NO_FEASIBLE_SOLUTION` first-class recording with failure attribution, error taxonomy (`E_SCHEMA`, `E_UNIT`, `E_VERSION`, `E_CONSTRAINT`, `E_POLICY`, `E_REF`), and 3 conformance levels (L1, L2, L3).
-* **`test/carbonDecisionEngine.test.ts` (11 tests)**: Verifies PROCEED decisions, HELD queues, P1 hotfixes, P2 60-min SLA auto-escalation, boundary math, and **Pareto Egress vs. Carbon Arbitrage** (vetoing migrations where bandwidth costs exceed emissions value).
 * **`test/apiEndpoints.test.ts` (12 tests)**: Integration tests verifying REST endpoints (`/api/health`, `/api/integrations/status`, `/api/carbon/all-regions`, `/api/ledger`, `/api/queue/enqueue`, `/api/settings/threshold`, `/api/ai-optimize`, `/api/optigreen/conformance`, `/api/optigreen/solve`, `/api/gemini/copilot`, and `/api/database/stats`).
+* **`test/carbonDecisionEngine.test.ts` (11 tests)**: Verifies PROCEED decisions, HELD queues, P1 hotfixes, P2 60-min SLA auto-escalation, boundary math, and **Pareto Egress vs. Carbon Arbitrage** (vetoing migrations where bandwidth costs exceed emissions value).
 * **`test/deploymentInterceptor.test.ts` (7 tests)**: Verifies exponential backoff calculations, retry recovery, maximum retry exhaustion, circuit-breaker tripping, open state rejection, and manual state reset.
 * **`test/auditLedger.test.ts` (5 tests)**: Verifies cryptographic SHA-256 block creation, parent hash chaining, chain integrity verification, and deliberate tamper detection.
 * **`test/awsSqsClient.test.ts` (5 tests)**: Tests dual-mode runtime detection (`LIVE` vs `SANDBOX`), simulated message generation, and AWS SDK v3 SQS dispatch behavior.
+* **`test/googleCloudClient.test.ts` (4 tests)**: Verifies Google Cloud Pub/Sub pipeline fanout, Cloud Run metadata detection, and Artifact Registry container deployment.
+* **`test/persistentDatabase.test.ts` (4 tests)**: Verifies that queued workloads, dispatch activities, and system thresholds persist durably across server reboots, container restarts, and simulated process crashes via ACID-safe atomic writes.
 
 ---
 
@@ -686,11 +687,13 @@ optigreen-scheduler/
 │       └── SpeculativeCacheView.tsx   # Speculative pre-build cache
 ├── test/
 │   ├── conformanceSuite.test.ts       # T01-T20 OptiGreen paper conformance tests (20 passed)
+│   ├── apiEndpoints.test.ts           # REST API & solver integration tests (12 passed)
 │   ├── carbonDecisionEngine.test.ts   # SLA policy & Pareto arbitrage tests (11 passed)
-│   ├── apiEndpoints.test.ts           # REST API & solver integration tests (10 passed)
 │   ├── deploymentInterceptor.test.ts  # Circuit breaker & backoff tests (7 passed)
 │   ├── auditLedger.test.ts            # SHA-256 chaining & tamper tests (5 passed)
-│   └── awsSqsClient.test.ts           # Dual-mode SQS client tests (5 passed)
+│   ├── awsSqsClient.test.ts           # Dual-mode SQS client tests (5 passed)
+│   ├── googleCloudClient.test.ts      # Cloud Run & Pub/Sub event tests (4 passed)
+│   └── persistentDatabase.test.ts     # ACID disk durability tests (4 passed)
 ├── .env.example                       # Environment template with dual-mode docs
 ├── package.json                       # Dependencies & scripts
 ├── server.ts                          # Express backend & Gemini 3 router
@@ -735,7 +738,7 @@ Open **`http://localhost:3000`** in your browser.
 
 ## 🛡️ ESG & CSRD Audit Compliance
 
-OptiGreen issues tamper-evident JSON audit blocks matching **CSRD Scope 3 Category 11** guidelines:
+OptiGreen issues tamper-evident JSON audit blocks matching **CSRD Scope 3 Category 1** guidelines:
 
 ```json
 {
@@ -747,7 +750,7 @@ OptiGreen issues tamper-evident JSON audit blocks matching **CSRD Scope 3 Catego
   "carbonIntensity": 182,
   "carbonSavedKg": 4.2,
   "costUsd": 1.16,
-  "csrdScope3Category": "Scope 3 Category 11: Cloud Computing Services",
+  "csrdScope3Category": "Scope 3 Category 1: Purchased Goods & Services (Cloud Computing)",
   "previousHash": "8f4e2b1a9c3d7e5f2a1b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f",
   "currentHash": "3a7b1c9d5e2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2b4c6d8e0f2a4b"
 }

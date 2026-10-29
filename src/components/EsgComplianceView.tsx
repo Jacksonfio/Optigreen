@@ -27,7 +27,7 @@ export const EsgComplianceView: React.FC = () => {
       carbonIntensity: 82,
       carbonSavedKg: 4.2,
       costUsd: 1.45,
-      csrdScope3Category: 'Scope 3 Category 11: Cloud Computing & Digital Infrastructure',
+      csrdScope3Category: 'Scope 3 Category 1: Purchased Goods & Services (Cloud Computing & Infrastructure)',
       previousHash: '0x8f3a1c9e4b2d7e0f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f',
       currentHash: '0x1d4e8a2b5c7f9e0a3b6c4d1e8f2a5b9c0d3e6f1a4b7c2d5e8f0a3b6c9d2e5f1a',
       auditorSignature: 'ECDSA_SHA256_VERIFIED_EU_CSRD_COMPLIANT'
@@ -41,7 +41,7 @@ export const EsgComplianceView: React.FC = () => {
       carbonIntensity: 110,
       carbonSavedKg: 3.8,
       costUsd: 1.60,
-      csrdScope3Category: 'Scope 3 Category 11: Cloud Computing & Digital Infrastructure',
+      csrdScope3Category: 'Scope 3 Category 1: Purchased Goods & Services (Cloud Computing & Infrastructure)',
       previousHash: '0x3b6c4d1e8f2a5b9c0d3e6f1a4b7c2d5e8f0a3b6c9d2e5f1a4b7c2d5e8f0a3b6c',
       currentHash: '0x8f3a1c9e4b2d7e0f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f',
       auditorSignature: 'ECDSA_SHA256_VERIFIED_EU_CSRD_COMPLIANT'
@@ -55,7 +55,7 @@ export const EsgComplianceView: React.FC = () => {
       carbonIntensity: 210,
       carbonSavedKg: 1.2,
       costUsd: 1.20,
-      csrdScope3Category: 'Scope 3 Category 11: Cloud Computing & Digital Infrastructure',
+      csrdScope3Category: 'Scope 3 Category 1: Purchased Goods & Services (Cloud Computing & Infrastructure)',
       previousHash: '0x0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b',
       currentHash: '0x3b6c4d1e8f2a5b9c0d3e6f1a4b7c2d5e8f0a3b6c9d2e5f1a4b7c2d5e8f0a3b6c',
       auditorSignature: 'ECDSA_SHA256_VERIFIED_EU_CSRD_COMPLIANT'
@@ -108,7 +108,7 @@ export const EsgComplianceView: React.FC = () => {
                 <span>EU CSRD & SEC Compliance Engine</span>
               </span>
               <span className="text-xs text-[#A1A1AA] font-code">
-                GHG Protocol Scope 3 Category 11 Auditable Ledger
+                GHG Protocol Scope 3 Category 1 Auditable Ledger
               </span>
             </div>              <h2 className="font-headline text-2xl md:text-3xl font-bold text-white tracking-tight">
                 Cryptographically Auditable ESG Ledger

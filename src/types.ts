@@ -140,7 +140,7 @@ export interface ComplianceAuditBlock {
   carbonIntensity: number;
   carbonSavedKg: number;
   costUsd: number;
-  csrdScope3Category: string; // e.g., 'Scope 3 Category 11: Use of Sold Products / Cloud Services'
+  csrdScope3Category: string; // e.g., 'Scope 3 Category 1: Purchased Goods & Services (Cloud Computing & Infrastructure)'
   previousHash: string;
   currentHash: string;
   auditorSignature: string;

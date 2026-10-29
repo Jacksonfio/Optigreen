@@ -18,7 +18,7 @@ export interface LedgerBlock {
   auditorSignature: string;
 }
 
-export const CSRD_SCOPE3_CATEGORY = 'Scope 3 Category 11: Cloud Computing & Digital Infrastructure';
+export const CSRD_SCOPE3_CATEGORY = 'Scope 3 Category 1: Purchased Goods & Services (Cloud Computing & Digital Infrastructure)';
 const GENESIS_HASH = '0'.repeat(64);
 
 async function sha256Hex(input: string): Promise<string> {
