@@ -709,7 +709,7 @@ optigreen-scheduler/
 
 ### 1. Installation
 ```bash
-git clone https://github.com/Jackson2006245/Optigreen.git
+git clone https://github.com/Jacksonfio/Optigreen.git
 cd Optigreen
 npm install
 ```
