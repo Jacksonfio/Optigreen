@@ -812,7 +812,7 @@ Your role:
 Respond with clear markdown and include actionable recommendations.`;
 
       const response = await ai.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
         contents: `${systemInstruction}\n\nUser Question [Mode: ${mode}]: ${prompt}`
       });
 
