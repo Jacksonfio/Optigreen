@@ -19,6 +19,7 @@ import { ParetoOptimizerView } from './components/ParetoOptimizerView';
 import { EsgComplianceView } from './components/EsgComplianceView';
 import { SlaPolicyEngineModal } from './components/SlaPolicyEngineModal';
 import { PipelineProfilerModal } from './components/PipelineProfilerModal';
+import { GeminiCopilotView } from './components/GeminiCopilotView';
 import Galaxy from './components/Galaxy';
 import { fetchWithInterceptor } from './services/resilientApiClient';
 import {
@@ -497,6 +498,10 @@ export default function App() {
               currentThreshold={settings.threshold}
               onSelectProfilerActivity={(act) => setSelectedProfilerActivity(act)}
             />
+          )}
+
+          {activeTab === 'gemini-copilot' && (
+            <GeminiCopilotView />
           )}
 
           {activeTab === 'speculative-cache' && (

@@ -84,11 +84,11 @@ export const ReportsView: React.FC = () => {
     setDownloadSuccess(true);
     setTimeout(() => setDownloadSuccess(false), 3000);
 
-    const reportTitle = `CarbonOps_${reportType}_Report_${Date.now()}`;
+    const reportTitle = `OptiGreen_${reportType}_Report_${Date.now()}`;
 
     if (exportFormat === 'JSON') {
       const data = {
-        title: 'CarbonOps Sustainability Audit Report',
+        title: 'OptiGreen Sustainability Audit Report',
         generatedAt: new Date().toISOString(),
         dateRange,
         selectedRepo,
@@ -148,7 +148,7 @@ export const ReportsView: React.FC = () => {
               </style>
             </head>
             <body>
-              <h1>CarbonOps Sustainability & S3 Audit Report</h1>
+              <h1>OptiGreen Sustainability & S3 Audit Report</h1>
               <div class="meta">
                 <p>Generated At: ${new Date().toLocaleString()}</p>
                 <p>Filter Criteria: Date Range: ${dateRange} | Repo: ${selectedRepo} | Region: ${selectedRegion}</p>

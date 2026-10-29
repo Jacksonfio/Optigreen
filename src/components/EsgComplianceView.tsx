@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FileText,
   ShieldCheck,
@@ -63,12 +63,29 @@ export const EsgComplianceView: React.FC = () => {
   ]);
 
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [ledgerVerified, setLedgerVerified] = useState<boolean | null>(null);
+
+  // Load the real SHA-256 hash-chained ledger from the orchestrator;
+  // fall back to seeded demo blocks if the API is unreachable.
+  useEffect(() => {
+    fetch('/api/ledger')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data.chain) && data.chain.length > 0) {
+          setAuditChain(data.chain);
+          setLedgerVerified(data.verification?.valid ?? null);
+        }
+      })
+      .catch(() => {
+        /* keep seeded demo chain */
+      });
+  }, []);
 
   const handleExportCsrdReport = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(auditChain, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `CSRD_EU_Scope3_CarbonOps_Audit_${Date.now()}.json`);
+    downloadAnchor.setAttribute('download', `CSRD_EU_Scope3_OptiGreen_Audit_${Date.now()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -93,13 +110,12 @@ export const EsgComplianceView: React.FC = () => {
               <span className="text-xs text-[#A1A1AA] font-code">
                 GHG Protocol Scope 3 Category 11 Auditable Ledger
               </span>
-            </div>
-            <h2 className="font-headline text-2xl md:text-3xl font-bold text-white tracking-tight">
-              Cryptographically Auditable ESG Ledger
-            </h2>
+            </div>              <h2 className="font-headline text-2xl md:text-3xl font-bold text-white tracking-tight">
+                Cryptographically Auditable ESG Ledger
+              </h2>
             <p className="font-body text-sm text-[#A1A1AA] max-w-3xl mt-2 leading-relaxed">
               2026 EU Corporate Sustainability Reporting Directive (CSRD) & SEC mandate verifiable Scope 2/3 cloud emissions accounting. 
-              CarbonOps creates a <b className="text-white">SHA-256 hash-chained immutable audit ledger</b> for every CI/CD deployment decision, guaranteeing regulatory compliance and audit defense.
+              OptiGreen creates a <b className="text-white">SHA-256 hash-chained immutable audit ledger</b> for every CI/CD deployment decision, guaranteeing regulatory compliance and audit defense.
             </p>
           </div>
 
@@ -145,7 +161,7 @@ export const EsgComplianceView: React.FC = () => {
             <Hash className="w-4 h-4 text-[#3B82F6]" />
           </div>
           <div className="font-headline text-2xl font-bold text-[#00FF41] mb-1">
-            Block #1042 Verified
+            {ledgerVerified === null ? 'SHA-256 Chain' : ledgerVerified ? 'Chain Verified' : 'Chain Broken'}
           </div>
           <p className="text-xs text-[#A1A1AA]">
             Tamper-evident SHA-256 hash chaining across all pipeline dispatches.

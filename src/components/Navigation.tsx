@@ -19,7 +19,8 @@ import {
   Cpu,
   Sliders,
   ShieldCheck,
-  Radio
+  Radio,
+  Play
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -45,6 +46,7 @@ export const SideNavBar: React.FC<NavigationProps> = ({
 }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'gemini-copilot', label: 'Gemini Copilot', icon: Sparkles },
     { id: 'deployments', label: 'Deployments', icon: Rocket },
     { id: 'speculative-cache', label: 'Speculative Cache', icon: Cpu },
     { id: 'pareto-optimizer', label: 'Pareto Cost/Carbon', icon: Sliders },
@@ -64,7 +66,7 @@ export const SideNavBar: React.FC<NavigationProps> = ({
           <Leaf className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="font-headline text-xl font-bold text-[#00FF41] tracking-tight leading-none">CarbonDevOps</h1>
+          <h1 className="font-headline text-xl font-bold text-[#00FF41] tracking-tight leading-none">OptiGreen</h1>
           <p className="font-code text-xs text-[#A1A1AA] mt-1">Sustainable CI/CD Platform</p>
         </div>
       </div>
@@ -111,6 +113,17 @@ export const SideNavBar: React.FC<NavigationProps> = ({
           <span>AI Smart Optimizer</span>
         </button>
 
+        <a
+          href="https://www.youtube.com/watch?v=XvRZJKy7myo&t=12s"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#EF4444]/15 hover:bg-[#EF4444]/25 text-[#F87171] border border-[#EF4444]/30 rounded-lg text-xs font-bold transition-all shadow-xs"
+          title="Watch YouTube Demo Walkthrough"
+        >
+          <Play className="w-3.5 h-3.5 fill-current" />
+          <span>Demo Video</span>
+        </a>
+
         <button
           onClick={onOpenDeliverables}
           className="w-full bg-[#141414] border border-[#2A2A2A] text-[#00FF41] font-semibold py-2 rounded-xl flex items-center justify-center gap-2 hover:bg-[#1A1A1A] transition-all text-xs"
@@ -145,7 +158,7 @@ export const TopNavBar: React.FC<NavigationProps> = ({
     <header className="flex justify-between items-center h-16 px-6 w-full sticky top-0 z-40 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-[#2A2A2A] shadow-xs text-[#E0E0E0]">
       <div className="flex items-center gap-4">
         <span className="font-headline text-lg font-bold text-white hidden sm:block">
-          CarbonOps Platform
+          OptiGreen Platform
         </span>
 
         {/* Live Grid API Status Badge */}
@@ -173,6 +186,17 @@ export const TopNavBar: React.FC<NavigationProps> = ({
           <Sliders className="w-3.5 h-3.5" />
           <span>Pareto Optimizer</span>
         </button>
+
+        <a
+          href="https://www.youtube.com/watch?v=XvRZJKy7myo&t=12s"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#EF4444]/15 hover:bg-[#EF4444]/25 text-[#F87171] border border-[#EF4444]/30 rounded-lg text-xs font-bold transition-all shadow-xs"
+          title="Watch YouTube Demo Walkthrough"
+        >
+          <Play className="w-3.5 h-3.5 fill-current" />
+          <span>Demo Video</span>
+        </a>
 
         <button
           onClick={onOpenDeliverables}

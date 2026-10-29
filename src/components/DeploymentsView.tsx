@@ -342,7 +342,7 @@ export const DeploymentsView: React.FC<DeploymentsViewProps> = ({
             </div>
 
             <div className="bg-[#0A0A0A] p-4 rounded-xl border border-[#2A2A2A] font-code text-[11px] text-[#00FF41] space-y-1.5 h-64 overflow-y-auto leading-relaxed">
-              <p className="text-[#A1A1AA]">[12:00:01] 🚀 Initializing CarbonOps Deployment Dispatcher...</p>
+              <p className="text-[#A1A1AA]">[12:00:01] 🚀 Initializing OptiGreen Deployment Dispatcher...</p>
               <p>[12:00:02] 🔍 Querying Electricity Maps API for {selectedLog.awsRegion}...</p>
               <p>[12:00:03] ✅ Carbon Intensity score: {selectedLog.carbonValue || 182} gCO2eq/kWh</p>
               <p>[12:00:04] 🌿 Policy Check: Intensity below threshold! Decision: PROCEED</p>

@@ -41,7 +41,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   // Dummy Export Handler
   const handleExportReport = () => {
     const reportData = {
-      title: 'CarbonOps Global Dashboard Summary',
+      title: 'OptiGreen Global Dashboard Summary',
       generatedAt: new Date().toISOString(),
       currentIntensity: 342,
       targetThreshold: currentThreshold,
@@ -55,7 +55,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `CarbonOps_Report_${Date.now()}.json`;
+    a.download = `OptiGreen_Report_${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

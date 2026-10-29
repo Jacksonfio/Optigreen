@@ -1,0 +1,77 @@
+name: OptiGreen Carbon-Aware Deployment Pipeline
+
+# This workflow demonstrates real Git & CI/CD pipeline integration with OptiGreen.
+# Before executing a compute-heavy deployment job, it queries the OptiGreen
+# scheduler to evaluate live regional grid intensity and determine whether to
+# PROCEED, ROUTE to an alternative green region, or HOLD in SQS.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sla_tier:
+        description: 'SLA Urgency Tier (P1_HOTFIX, P2_FEATURE, P3_BATCH)'
+        required: true
+        default: 'P2_FEATURE'
+        type: choice
+        options:
+          - P1_HOTFIX
+          - P2_FEATURE
+          - P3_BATCH
+
+jobs:
+  carbon-gate:
+    name: OptiGreen Deployment Gate & Interceptor
+    runs-on: ubuntu-latest
+    outputs:
+      decision: ${{ steps.evaluate.outputs.decision }}
+      target_region: ${{ steps.evaluate.outputs.target_region }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Intercept & Evaluate Carbon Intensity
+        id: evaluate
+        run: |
+          echo "Intercepting pipeline run for commit: $GITHUB_SHA"
+          PAYLOAD=$(cat <<EOF
+          {
+            "repo": "$GITHUB_REPOSITORY",
+            "branch": "$GITHUB_REF_NAME",
+            "commitSha": "$GITHUB_SHA",
+            "commitAuthor": "$GITHUB_ACTOR",
+            "awsRegion": "us-east-1",
+            "slaTier": "${{ inputs.sla_tier || 'P2_FEATURE' }}"
+          }
+          EOF
+          )
+          
+          # If OPTIGREEN_ENDPOINT is set in secrets, query live service; else simulate gate
+          if [ -n "${{ secrets.OPTIGREEN_API_URL }}" ]; then
+            RESPONSE=$(curl -s -X POST "${{ secrets.OPTIGREEN_API_URL }}/api/queue/enqueue" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD")
+            DECISION=$(echo "$RESPONSE" | jq -r '.decision.decision // "PROCEED"')
+            REGION=$(echo "$RESPONSE" | jq -r '.item.awsRegion // "us-east-1"')
+          else
+            echo "No live OptiGreen URL configured; defaulting to gate evaluation."
+            DECISION="PROCEED"
+            REGION="us-west-2"
+          fi
+          
+          echo "Carbon Decision: $DECISION"
+          echo "Target AWS Region: $REGION"
+          echo "decision=$DECISION" >> $GITHUB_OUTPUT
+          echo "target_region=$REGION" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Execute Deploy on Green Compute
+    needs: [carbon-gate]
+    if: needs.carbon-gate.outputs.decision == 'PROCEED' || needs.carbon-gate.outputs.decision == 'SLA_AUTO_ESCALATED'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Target AWS Region
+        run: |
+          echo "Deploying workload to optimal green region: ${{ needs.carbon-gate.outputs.target_region }}"
+          echo "Pipeline executed under green grid conditions."

@@ -121,7 +121,7 @@ export const SpeculativeCacheView: React.FC<SpeculativeCacheViewProps> = ({
               Speculative Pre-Build & Hold Cache
             </h2>
             <p className="font-body text-sm text-[#A1A1AA] max-w-3xl mt-2 leading-relaxed">
-              When the grid is green, CarbonOps ML predicts merge velocity and pre-compiles Docker container artifacts in advance. 
+              When the grid is green, OptiGreen ML predicts merge velocity and pre-compiles Docker container artifacts in advance. 
               When developers hit <b className="text-white">Deploy</b> during a dirty grid window, the pre-built clean artifact dispatches <b className="text-[#00FF41]">instantly (&lt; 250ms)</b> — zero build wait time, 100% clean energy paid in advance.
             </p>
           </div>
@@ -161,7 +161,7 @@ export const SpeculativeCacheView: React.FC<SpeculativeCacheViewProps> = ({
 
               <div>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-white font-bold">CarbonOps Speculative Dispatch</span>
+                  <span className="text-white font-bold">OptiGreen Speculative Dispatch</span>
                   <span className="font-code font-bold text-[#00FF41]">0.2 sec (Instant)</span>
                 </div>
                 <div className="w-full bg-[#2A2A2A] h-2.5 rounded-full overflow-hidden">
