@@ -709,8 +709,8 @@ optigreen-scheduler/
 
 ### 1. Installation
 ```bash
-git clone https://github.com/your-org/optigreen-scheduler.git
-cd optigreen-scheduler
+git clone https://github.com/Jackson2006245/Optigreen.git
+cd Optigreen
 npm install
 ```
 
