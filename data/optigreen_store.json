@@ -1,13 +1,1655 @@
 {
   "version": "1.0.0",
-  "lastPersisted": "2026-10-29T21:22:19.298Z",
+  "lastPersisted": "2026-11-02T13:52:15.165Z",
   "settings": {
     "threshold": 220,
     "autoDeployEnabled": true,
     "checkIntervalMinutes": 5,
-    "updatedAt": "2026-10-29T21:22:17.569Z"
+    "updatedAt": "2026-11-02T11:17:14.176Z"
   },
   "queue": [
+    {
+      "id": "sqs-msg-1793627535163",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "1a2b3c4",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "07:22 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "FrontEnd Dev",
+      "workflowId": "wf-29368",
+      "createdAt": "2026-11-02T13:52:15.163Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793627534524",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "7f6e5d4",
+      "awsRegion": "eu-north-1",
+      "carbonIntensity": 28,
+      "threshold": 220,
+      "queueTime": "07:22 pm",
+      "estWait": "Now",
+      "status": "DISPATCHED_TO_GREEN_REGION",
+      "decision": "REROUTED",
+      "decisionReason": "Gemini 2.5 Flash autonomous tool loop rerouted from ap-south-1 (710 gCO2/kWh) to green region eu-north-1 (28 gCO2/kWh), abating 2.94 kg CO2e.",
+      "commitAuthor": "Data Engineer",
+      "workflowId": "wf-68707",
+      "createdAt": "2026-11-02T13:52:14.524Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 28,
+        "originRegion": "ap-south-1",
+        "originIntensity": 710,
+        "estimatedSavingsKg": 2.94,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.147,
+        "netBenefitUsd": 0.097,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 113,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 48,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 28,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-south-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 1.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.94kg CO2 (value $0.147) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.94,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.147,
+              "netBenefitUsd": 0.097
+            }
+          },
+          {
+            "tool": "dispatchWorkloadMigration",
+            "input": {
+              "workloadId": "sqs-msg-1793627534524",
+              "targetRegion": "eu-north-1"
+            },
+            "output": {
+              "status": "MIGRATION_PROPOSED",
+              "workloadId": "sqs-msg-1793627534524",
+              "targetRegion": "eu-north-1",
+              "reason": "Grid intensity in ap-south-1 (710 gCO2/kWh) exceeds SLA threshold (220 gCO2/kWh). Shifting build to eu-north-1 (28 gCO2/kWh). Net carbon abatement: 2.94kg CO2.",
+              "timestamp": "2026-11-02T13:52:15.104Z"
+            }
+          }
+        ],
+        "reasoning": "Gemini Autonomous Agent detected high grid emissions (710 gCO2eq/kWh) in origin region [ap-south-1]. Multi-turn tool execution evaluated candidate regions and WAN egress arbitrage: rerouting to [eu-north-1] (28 gCO2eq/kWh) yields net savings of 2.94kg CO2 (economic value $0.147) at $0.05 data transfer cost.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793627484904",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "1a2b3c4",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "07:21 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "FrontEnd Dev",
+      "workflowId": "wf-48294",
+      "createdAt": "2026-11-02T13:51:24.904Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793627479637",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "7f6e5d4",
+      "awsRegion": "eu-north-1",
+      "carbonIntensity": 28,
+      "threshold": 220,
+      "queueTime": "07:21 pm",
+      "estWait": "Now",
+      "status": "DISPATCHED_TO_GREEN_REGION",
+      "decision": "REROUTED",
+      "decisionReason": "Gemini 2.5 Flash autonomous tool loop rerouted from ap-south-1 (710 gCO2/kWh) to green region eu-north-1 (28 gCO2/kWh), abating 2.95 kg CO2e.",
+      "commitAuthor": "Data Engineer",
+      "workflowId": "wf-11274",
+      "createdAt": "2026-11-02T13:51:19.637Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 28,
+        "originRegion": "ap-south-1",
+        "originIntensity": 710,
+        "estimatedSavingsKg": 2.95,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.1475,
+        "netBenefitUsd": 0.0975,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 113,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 48,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 28,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.95kg CO2 (value $0.1475) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.95,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.1475,
+              "netBenefitUsd": 0.0975
+            }
+          }
+        ],
+        "reasoning": "Autonomous candidate reroute to eu-north-1 proposed (28 gCO2/kWh vs 710 gCO2/kWh origin).",
+        "modeStatus": "LIVE"
+      }
+    },
+    {
+      "id": "sqs-msg-1793625431661",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "1a2b3c4",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "06:47 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "FrontEnd Dev",
+      "workflowId": "wf-45682",
+      "createdAt": "2026-11-02T13:17:11.661Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793625425837",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "7f6e5d4",
+      "awsRegion": "ap-south-1",
+      "carbonIntensity": 710,
+      "threshold": 220,
+      "queueTime": "06:47 pm",
+      "estWait": "Hold (Low Carbon Pending)",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 710 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Data Engineer",
+      "workflowId": "wf-64627",
+      "createdAt": "2026-11-02T13:17:05.837Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 28,
+        "originRegion": "ap-south-1",
+        "originIntensity": 710,
+        "estimatedSavingsKg": 2.95,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.1475,
+        "netBenefitUsd": 0.0975,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 113,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 48,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 28,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.95kg CO2 (value $0.1475) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.95,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.1475,
+              "netBenefitUsd": 0.0975
+            }
+          }
+        ],
+        "reasoning": "Autonomous candidate reroute to eu-north-1 proposed (28 gCO2/kWh vs 710 gCO2/kWh origin).",
+        "modeStatus": "LIVE"
+      }
+    },
+    {
+      "id": "sqs-msg-1793618255129",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "04:47 pm",
+      "estWait": "Hold (Low Carbon Pending)",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-14422",
+      "createdAt": "2026-11-02T11:17:35.129Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 22,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 2.84,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.142,
+        "netBenefitUsd": 0.092,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 107,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 42,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 22,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.84kg CO2 (value $0.142) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.84,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.142,
+              "netBenefitUsd": 0.092
+            }
+          }
+        ],
+        "reasoning": "Autonomous candidate reroute to eu-north-1 proposed (22 gCO2/kWh vs 680 gCO2/kWh origin).",
+        "modeStatus": "LIVE"
+      }
+    },
+    {
+      "id": "sqs-msg-1793618234151",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "04:47 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-37359",
+      "createdAt": "2026-11-02T11:17:14.151Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793618147788",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "04:45 pm",
+      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~59m",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-77622",
+      "createdAt": "2026-11-02T11:15:47.788Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 22,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 2.84,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.142,
+        "netBenefitUsd": 0.092,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 107,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 42,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 22,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.84kg CO2 (value $0.142) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.84,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.142,
+              "netBenefitUsd": 0.092
+            }
+          }
+        ],
+        "reasoning": "Autonomous candidate reroute to eu-north-1 proposed (22 gCO2/kWh vs 680 gCO2/kWh origin).",
+        "modeStatus": "LIVE"
+      }
+    },
+    {
+      "id": "sqs-msg-1793618129590",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "04:45 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-30686",
+      "createdAt": "2026-11-02T11:15:29.590Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793616875623",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "1a2b3c4",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "04:24 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "FrontEnd Dev",
+      "workflowId": "wf-14849",
+      "createdAt": "2026-11-02T10:54:35.623Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793616870410",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "7f6e5d4",
+      "awsRegion": "ap-south-1",
+      "carbonIntensity": 710,
+      "threshold": 220,
+      "queueTime": "04:24 pm",
+      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~38m",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 710 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Data Engineer",
+      "workflowId": "wf-20333",
+      "createdAt": "2026-11-02T10:54:30.410Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 19,
+        "originRegion": "ap-south-1",
+        "originIntensity": 710,
+        "estimatedSavingsKg": 2.98,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.149,
+        "netBenefitUsd": 0.099,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.98kg CO2 (value $0.149) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.98,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.149,
+              "netBenefitUsd": 0.099
+            }
+          }
+        ],
+        "reasoning": "Autonomous candidate reroute to eu-north-1 proposed (19 gCO2/kWh vs 710 gCO2/kWh origin).",
+        "modeStatus": "LIVE"
+      }
+    },
+    {
+      "id": "sqs-msg-1793616790091",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "1a2b3c4",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "04:23 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "FrontEnd Dev",
+      "workflowId": "wf-46841",
+      "createdAt": "2026-11-02T10:53:10.091Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793616785098",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "7f6e5d4",
+      "awsRegion": "ap-south-1",
+      "carbonIntensity": 710,
+      "threshold": 220,
+      "queueTime": "04:23 pm",
+      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~36m",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 710 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Data Engineer",
+      "workflowId": "wf-77276",
+      "createdAt": "2026-11-02T10:53:05.098Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "us-west-2",
+        "candidateIntensity": 104,
+        "originRegion": "ap-south-1",
+        "originIntensity": 710,
+        "estimatedSavingsKg": 30.3,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.45,
+        "netBenefitUsd": 0.4,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          }
+        ],
+        "reasoning": "Autonomous candidate reroute to us-west-2 proposed (104 gCO2/kWh vs 710 gCO2/kWh origin).",
+        "modeStatus": "LIVE"
+      }
+    },
+    {
+      "id": "sqs-msg-1793616372711",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "04:16 pm",
+      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~29m",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-45110",
+      "createdAt": "2026-11-02T10:46:12.711Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "us-west-2",
+        "candidateIntensity": 104,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 28.8,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.45,
+        "netBenefitUsd": 0.4,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          }
+        ],
+        "reasoning": "Autonomous candidate reroute to us-west-2 proposed (104 gCO2/kWh vs 680 gCO2/kWh origin).",
+        "modeStatus": "LIVE"
+      }
+    },
+    {
+      "id": "sqs-msg-1793616367502",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "04:16 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-57523",
+      "createdAt": "2026-11-02T10:46:07.502Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793615097730",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:54 pm",
+      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~8m",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-52576",
+      "createdAt": "2026-11-02T10:24:57.730Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 19,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 2.85,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.1425,
+        "netBenefitUsd": 0.0925,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-southeast-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 1.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.85kg CO2 (value $0.1425) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.85,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.1425,
+              "netBenefitUsd": 0.0925
+            }
+          },
+          {
+            "tool": "dispatchWorkloadMigration",
+            "input": {
+              "workloadId": "sqs-msg-1793615097730",
+              "targetRegion": "eu-north-1"
+            },
+            "output": {
+              "status": "MIGRATION_PROPOSED",
+              "workloadId": "sqs-msg-1793615097730",
+              "targetRegion": "eu-north-1",
+              "reason": "Grid intensity in ap-southeast-1 (680 gCO2/kWh) exceeds SLA threshold (220 gCO2/kWh). Shifting build to eu-north-1 (19 gCO2/kWh). Net carbon abatement: 2.85kg CO2.",
+              "timestamp": "2026-11-02T10:24:57.731Z"
+            }
+          }
+        ],
+        "reasoning": "Gemini Autonomous Agent detected high grid emissions (680 gCO2eq/kWh) in origin region [ap-southeast-1]. Multi-turn tool execution evaluated candidate regions and WAN egress arbitrage: rerouting to [eu-north-1] (19 gCO2eq/kWh) yields net savings of 2.85kg CO2 (economic value $0.1425) at $0.05 data transfer cost.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793615097572",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:54 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-94577",
+      "createdAt": "2026-11-02T10:24:57.572Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793614725945",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:48 pm",
+      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~2m",
+      "status": "HELD",
+      "decision": "QUEUE",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-92151",
+      "createdAt": "2026-11-02T10:18:45.945Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 19,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 2.85,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.1425,
+        "netBenefitUsd": 0.0925,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-southeast-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 1.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.85kg CO2 (value $0.1425) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.85,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.1425,
+              "netBenefitUsd": 0.0925
+            }
+          },
+          {
+            "tool": "dispatchWorkloadMigration",
+            "input": {
+              "workloadId": "sqs-msg-1793614725945",
+              "targetRegion": "eu-north-1"
+            },
+            "output": {
+              "status": "MIGRATION_PROPOSED",
+              "workloadId": "sqs-msg-1793614725945",
+              "targetRegion": "eu-north-1",
+              "reason": "Grid intensity in ap-southeast-1 (680 gCO2/kWh) exceeds SLA threshold (220 gCO2/kWh). Shifting build to eu-north-1 (19 gCO2/kWh). Net carbon abatement: 2.85kg CO2.",
+              "timestamp": "2026-11-02T10:18:45.948Z"
+            }
+          }
+        ],
+        "reasoning": "Gemini Autonomous Agent detected high grid emissions (680 gCO2eq/kWh) in origin region [ap-southeast-1]. Multi-turn tool execution evaluated candidate regions and WAN egress arbitrage: rerouting to [eu-north-1] (19 gCO2eq/kWh) yields net savings of 2.85kg CO2 (economic value $0.1425) at $0.05 data transfer cost.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793614725717",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:48 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-63983",
+      "createdAt": "2026-11-02T10:18:45.717Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793613891550",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:34 pm",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-23363",
+      "createdAt": "2026-11-02T10:04:51.550Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 19,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 2.85,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.1425,
+        "netBenefitUsd": 0.0925,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-southeast-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 1.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.85kg CO2 (value $0.1425) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.85,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.1425,
+              "netBenefitUsd": 0.0925
+            }
+          },
+          {
+            "tool": "dispatchWorkloadMigration",
+            "input": {
+              "workloadId": "sqs-msg-1793613891550",
+              "targetRegion": "eu-north-1"
+            },
+            "output": {
+              "status": "MIGRATION_PROPOSED",
+              "workloadId": "sqs-msg-1793613891550",
+              "targetRegion": "eu-north-1",
+              "reason": "Grid intensity in ap-southeast-1 (680 gCO2/kWh) exceeds SLA threshold (220 gCO2/kWh). Shifting build to eu-north-1 (19 gCO2/kWh). Net carbon abatement: 2.85kg CO2.",
+              "timestamp": "2026-11-02T10:04:51.551Z"
+            }
+          }
+        ],
+        "reasoning": "Gemini Autonomous Agent detected high grid emissions (680 gCO2eq/kWh) in origin region [ap-southeast-1]. Multi-turn tool execution evaluated candidate regions and WAN egress arbitrage: rerouting to [eu-north-1] (19 gCO2eq/kWh) yields net savings of 2.85kg CO2 (economic value $0.1425) at $0.05 data transfer cost.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793613891402",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:34 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-53221",
+      "createdAt": "2026-11-02T10:04:51.402Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793613737538",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:32 pm",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-62354",
+      "createdAt": "2026-11-02T10:02:17.538Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 19,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 2.85,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.1425,
+        "netBenefitUsd": 0.0925,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-southeast-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 1.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.85kg CO2 (value $0.1425) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.85,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.1425,
+              "netBenefitUsd": 0.0925
+            }
+          },
+          {
+            "tool": "dispatchWorkloadMigration",
+            "input": {
+              "workloadId": "sqs-msg-1793613737538",
+              "targetRegion": "eu-north-1"
+            },
+            "output": {
+              "status": "MIGRATION_PROPOSED",
+              "workloadId": "sqs-msg-1793613737538",
+              "targetRegion": "eu-north-1",
+              "reason": "Grid intensity in ap-southeast-1 (680 gCO2/kWh) exceeds SLA threshold (220 gCO2/kWh). Shifting build to eu-north-1 (19 gCO2/kWh). Net carbon abatement: 2.85kg CO2.",
+              "timestamp": "2026-11-02T10:02:17.539Z"
+            }
+          }
+        ],
+        "reasoning": "Gemini Autonomous Agent detected high grid emissions (680 gCO2eq/kWh) in origin region [ap-southeast-1]. Multi-turn tool execution evaluated candidate regions and WAN egress arbitrage: rerouting to [eu-north-1] (19 gCO2eq/kWh) yields net savings of 2.85kg CO2 (economic value $0.1425) at $0.05 data transfer cost.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793613737450",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:32 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-10037",
+      "createdAt": "2026-11-02T10:02:17.450Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793613660922",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:31 pm",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-34452",
+      "createdAt": "2026-11-02T10:01:00.922Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": true,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 19,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 2.85,
+        "egressAllowed": true,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.1425,
+        "netBenefitUsd": 0.0925,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 104,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 39,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 19,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-southeast-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 1.5
+            },
+            "output": {
+              "allowed": true,
+              "reason": "Economically and environmentally positive: saves 2.85kg CO2 (value $0.1425) at $0.05 egress cost.",
+              "netCarbonSavedKg": 2.85,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.1425,
+              "netBenefitUsd": 0.0925
+            }
+          },
+          {
+            "tool": "dispatchWorkloadMigration",
+            "input": {
+              "workloadId": "sqs-msg-1793613660922",
+              "targetRegion": "eu-north-1"
+            },
+            "output": {
+              "status": "MIGRATION_PROPOSED",
+              "workloadId": "sqs-msg-1793613660922",
+              "targetRegion": "eu-north-1",
+              "reason": "Grid intensity in ap-southeast-1 (680 gCO2/kWh) exceeds SLA threshold (220 gCO2/kWh). Shifting build to eu-north-1 (19 gCO2/kWh). Net carbon abatement: 2.85kg CO2.",
+              "timestamp": "2026-11-02T10:01:00.922Z"
+            }
+          }
+        ],
+        "reasoning": "Gemini Autonomous Agent detected high grid emissions (680 gCO2eq/kWh) in origin region [ap-southeast-1]. Multi-turn tool execution evaluated candidate regions and WAN egress arbitrage: rerouting to [eu-north-1] (19 gCO2eq/kWh) yields net savings of 2.85kg CO2 (economic value $0.1425) at $0.05 data transfer cost.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793613660808",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:31 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-86693",
+      "createdAt": "2026-11-02T10:01:00.808Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793613491137",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:28 pm",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-32278",
+      "createdAt": "2026-11-02T09:58:11.137Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": false,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 17,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 0.48,
+        "egressAllowed": false,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.024,
+        "netBenefitUsd": -0.026,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 102,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 37,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 17,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-southeast-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 0.25
+            },
+            "output": {
+              "allowed": false,
+              "reason": "Egress penalty ($0.05) exceeds carbon value ($0.024) for 2.5GB artifact. Migration vetoed; defer locally instead.",
+              "netCarbonSavedKg": 0.48,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.024,
+              "netBenefitUsd": -0.026
+            }
+          }
+        ],
+        "reasoning": "Candidate reroute evaluated but WAN egress transfer cost ($0.05) exceeds carbon abatement value ($0.024). Migration vetoed; holding in origin queue for local renewable window.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793613491029",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:28 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-15030",
+      "createdAt": "2026-11-02T09:58:11.029Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793613423351",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:27 pm",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-25118",
+      "createdAt": "2026-11-02T09:57:03.351Z",
+      "slaTier": "P2_FEATURE",
+      "rerouteProposal": {
+        "proposed": false,
+        "candidateRegion": "eu-north-1",
+        "candidateIntensity": 17,
+        "originRegion": "ap-southeast-1",
+        "originIntensity": 680,
+        "estimatedSavingsKg": 0.48,
+        "egressAllowed": false,
+        "egressCostUsd": 0.05,
+        "carbonValueUsd": 0.024,
+        "netBenefitUsd": -0.026,
+        "toolsExecuted": [
+          {
+            "tool": "inspectRegionalGridTelemetry",
+            "input": {
+              "regions": [
+                "us-west-2",
+                "ca-central-1",
+                "eu-north-1"
+              ]
+            },
+            "output": {
+              "us-west-2": {
+                "region": "us-west-2",
+                "intensity": 102,
+                "regionName": "US West (Oregon)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "ca-central-1": {
+                "region": "ca-central-1",
+                "intensity": 37,
+                "regionName": "Canada (Central)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              },
+              "eu-north-1": {
+                "region": "eu-north-1",
+                "intensity": 17,
+                "regionName": "Europe (Stockholm)",
+                "isLive": false,
+                "status": "OPTIMAL_GREEN"
+              }
+            }
+          },
+          {
+            "tool": "evaluateWanEgressVeto",
+            "input": {
+              "originRegion": "ap-southeast-1",
+              "targetRegion": "eu-north-1",
+              "artifactSizeGb": 2.5,
+              "computeHours": 0.25
+            },
+            "output": {
+              "allowed": false,
+              "reason": "Egress penalty ($0.05) exceeds carbon value ($0.024) for 2.5GB artifact. Migration vetoed; defer locally instead.",
+              "netCarbonSavedKg": 0.48,
+              "egressCostUsd": 0.05,
+              "carbonValueUsd": 0.024,
+              "netBenefitUsd": -0.026
+            }
+          }
+        ],
+        "reasoning": "Candidate reroute evaluated but WAN egress transfer cost ($0.05) exceeds carbon abatement value ($0.024). Migration vetoed; holding in origin queue for local renewable window.",
+        "modeStatus": "SANDBOX"
+      }
+    },
+    {
+      "id": "sqs-msg-1793613423045",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:27 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-81716",
+      "createdAt": "2026-11-02T09:57:03.045Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793612957215",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:19 pm",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-91444",
+      "createdAt": "2026-11-02T09:49:17.215Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793612956934",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:19 pm",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-72776",
+      "createdAt": "2026-11-02T09:49:16.934Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793309873307",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "3a2b1c0",
+      "awsRegion": "ap-southeast-1",
+      "carbonIntensity": 680,
+      "threshold": 220,
+      "queueTime": "03:07 am",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
+      "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
+      "commitAuthor": "Developer",
+      "workflowId": "wf-94961",
+      "createdAt": "2026-10-29T21:37:53.307Z",
+      "slaTier": "P2_FEATURE"
+    },
+    {
+      "id": "sqs-msg-1793309873085",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "9e8d7c6",
+      "awsRegion": "us-west-2",
+      "carbonIntensity": 110,
+      "threshold": 220,
+      "queueTime": "03:07 am",
+      "estWait": "~ 1m 00s",
+      "status": "QUEUED",
+      "decision": "PROCEED",
+      "decisionReason": "Grid intensity 110 gCO2eq/kWh is within threshold (220). Dispatching to green region.",
+      "commitAuthor": "Test Bot",
+      "workflowId": "wf-22814",
+      "createdAt": "2026-10-29T21:37:53.085Z",
+      "slaTier": "P2_FEATURE"
+    },
     {
       "id": "sqs-msg-1793308939102",
       "repo": "analytics-api",
@@ -17,9 +1659,9 @@
       "carbonIntensity": 680,
       "threshold": 220,
       "queueTime": "02:52 am",
-      "estWait": "Hold (Low Carbon Pending)",
-      "status": "HELD",
-      "decision": "QUEUE",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
       "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
       "commitAuthor": "Developer",
       "workflowId": "wf-87625",
@@ -53,9 +1695,9 @@
       "carbonIntensity": 680,
       "threshold": 220,
       "queueTime": "02:51 am",
-      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~60m",
-      "status": "HELD",
-      "decision": "QUEUE",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
       "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
       "commitAuthor": "Developer",
       "workflowId": "wf-45464",
@@ -89,9 +1731,9 @@
       "carbonIntensity": 680,
       "threshold": 220,
       "queueTime": "02:47 am",
-      "estWait": "Hold (Low Carbon Pending) — SLA escalation in ~56m",
-      "status": "HELD",
-      "decision": "QUEUE",
+      "estWait": "~ 1m 30s",
+      "status": "DEPLOYED",
+      "decision": "SLA_AUTO_ESCALATED",
       "decisionReason": "Grid intensity 680 gCO2eq/kWh exceeds threshold (220). Holding until optimal renewable window.",
       "commitAuthor": "Developer",
       "workflowId": "wf-80356",
@@ -153,6 +1795,482 @@
     }
   ],
   "activities": [
+    {
+      "id": "act-1793627535163",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "sha-1a2b3",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793627534524",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "sha-7f6e5",
+      "gridScore": 96,
+      "decision": "REROUTED",
+      "carbonImpact": "-2940g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "eu-north-1",
+      "carbonValue": 28,
+      "savedKg": 2.94
+    },
+    {
+      "id": "act-1793627484904",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "sha-1a2b3",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793627479637",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "sha-7f6e5",
+      "gridScore": 96,
+      "decision": "REROUTED",
+      "carbonImpact": "-2950g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "eu-north-1",
+      "carbonValue": 28,
+      "savedKg": 2.95
+    },
+    {
+      "id": "act-1793625431661",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "sha-1a2b3",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793625425837",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "sha-7f6e5",
+      "gridScore": 0,
+      "decision": "QUEUE",
+      "carbonImpact": "+24.5kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-south-1",
+      "carbonValue": 710,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793618255129",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793618234151",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793618147788",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793618129590",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793616875623",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "sha-1a2b3",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793616870410",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "sha-7f6e5",
+      "gridScore": 0,
+      "decision": "QUEUE",
+      "carbonImpact": "+24.5kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-south-1",
+      "carbonValue": 710,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793616790091",
+      "repo": "static-assets-cdn",
+      "branch": "main",
+      "commitSha": "sha-1a2b3",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793616785098",
+      "repo": "fraud-detection-model",
+      "branch": "main",
+      "commitSha": "sha-7f6e5",
+      "gridScore": 0,
+      "decision": "QUEUE",
+      "carbonImpact": "+24.5kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-south-1",
+      "carbonValue": 710,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793616372711",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793616367502",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793615097730",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793615097572",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793614725945",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793614725717",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793613891550",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793613891402",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793613737538",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793613737450",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793613660922",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793613660808",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793613491137",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793613491029",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793613423351",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793613423045",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793612957215",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793612956934",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
+    {
+      "id": "act-1793309873307",
+      "repo": "analytics-api",
+      "branch": "main",
+      "commitSha": "sha-3a2b1",
+      "gridScore": 3,
+      "decision": "QUEUE",
+      "carbonImpact": "+23.0kg (held)",
+      "status": "Scheduled",
+      "timestamp": "Just now",
+      "awsRegion": "ap-southeast-1",
+      "carbonValue": 680,
+      "savedKg": 0
+    },
+    {
+      "id": "act-1793309873085",
+      "repo": "checkout-service",
+      "branch": "main",
+      "commitSha": "sha-9e8d7",
+      "gridScore": 84,
+      "decision": "PROCEED",
+      "carbonImpact": "-27g CO2 (saved)",
+      "status": "Running",
+      "timestamp": "Just now",
+      "awsRegion": "us-west-2",
+      "carbonValue": 110,
+      "savedKg": 0.027
+    },
     {
       "id": "act-1793308939102",
       "repo": "analytics-api",

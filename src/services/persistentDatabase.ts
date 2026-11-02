@@ -321,14 +321,16 @@ export class PersistentDatabase {
     } catch {}
 
     return {
-      mode: 'PERSISTENT_FILE_ACID',
+      mode: 'CONTAINER_LOCAL_JSON',
+      storageType: 'EPHEMERAL_CONTAINER_DISK',
       dbPath: this.dbFilePath,
       totalQueued: this.memoryCache.queue.length,
       totalActivities: this.memoryCache.activities.length,
       currentThreshold: this.memoryCache.settings.threshold,
       diskSizeBytes,
       lastPersisted: this.memoryCache.lastPersisted,
-      isDurable: true
+      isDurable: false,
+      durabilityNote: 'Container filesystem is ephemeral on Cloud Run; multi-region durability syncs via Google Cloud Pub/Sub & Firestore.'
     };
   }
 }

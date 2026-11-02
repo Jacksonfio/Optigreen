@@ -28,10 +28,13 @@ export async function getQueue(req: Request, res: Response): Promise<void> {
 export async function enqueueWorkload(req: Request, res: Response): Promise<void> {
   const {
     repo,
+    name,
     branch,
     commitSha,
     awsRegion,
     carbonIntensity,
+    intensityLimit,
+    threshold: bodyThreshold,
     commitAuthor,
     slaTier,
     forceSimulatedError,
@@ -41,31 +44,37 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
   } = req.body;
 
   let targetRegion = awsRegion || 'us-east-1';
+  const workloadRepo = repo || name || 'new-microservice';
 
   // Server-Side Telemetry Lookup: Query verified regional carbon intensity
   const telemetry = await getServerSideRegionIntensity(targetRegion);
   let intensity = (typeof carbonIntensity === 'number' && carbonIntensity > 0) ? carbonIntensity : telemetry.intensity;
-  const threshold = globalDb.getSettings().threshold;
+  
+  // Respect client intensityLimit or threshold parameter, fallback to system setting
+  const threshold = (typeof intensityLimit === 'number' && intensityLimit > 0) 
+    ? intensityLimit 
+    : ((typeof bodyThreshold === 'number' && bodyThreshold > 0) ? bodyThreshold : globalDb.getSettings().threshold);
+
   const tier: SlaTier = slaTier === 'P1_HOTFIX' || slaTier === 'P3_BATCH' ? slaTier : 'P2_FEATURE';
   const now = Date.now();
   const workloadId = `sqs-msg-${now}`;
 
-  // Pillar 4: SLA-tiered carbon-aware decision (deterministic, unit tested)
+  // Pillar 4: SLA-tiered carbon-aware baseline decision
   let decision = decideDeployment({ carbonIntensity: intensity, threshold, slaTier: tier, now });
   let isBelow = decision.decision !== 'QUEUE';
 
   // ---------------------------------------------------------------------------
-  // Critical-Path Gemini 3 AI Orchestration & Tool-Calling Loop:
-  // When grid emissions exceed SLA thresholds, invoke Gemini's multi-turn
-  // tool-calling loop (inspectRegionalGridTelemetry, evaluateWanEgressVeto, dispatchWorkloadMigration, escalateP1Hotfix)
-  // to autonomously evaluate and propose candidate rerouting!
+  // Critical-Path Gemini AI Autonomous Governance & Tool-Calling Loop:
+  // When grid emissions exceed threshold, invoke Gemini's multi-turn tool calling
+  // (inspectRegionalGridTelemetry, evaluateWanEgressVeto, dispatchWorkloadMigration).
+  // Gemini's evaluation directly GOVERNS the scheduling outcome!
   // ---------------------------------------------------------------------------
   let geminiRerouteProposal: GeminiRerouteProposal | null = null;
-  if (!isBelow || intensity > threshold) {
+  if (!isBelow || intensity > threshold || includeAiAdvice) {
     try {
       geminiRerouteProposal = await proposeCandidateRerouting({
         workloadId,
-        repo: repo || 'new-microservice',
+        repo: workloadRepo,
         branch: branch || 'main',
         commitSha: commitSha || Math.random().toString(36).substring(2, 9),
         originRegion: targetRegion,
@@ -75,12 +84,19 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
         artifactSizeGb: Number(artifactSizeGb) || 2.5
       });
 
-      // If client requests automatic reroute application upon approval
-      if (autoReroute && geminiRerouteProposal.proposed && geminiRerouteProposal.egressAllowed) {
+      // Autonomous Governance: If Gemini proposes green migration and WAN egress is economically cleared:
+      if (geminiRerouteProposal && geminiRerouteProposal.proposed && geminiRerouteProposal.egressAllowed) {
+        const originRegion = targetRegion;
         targetRegion = geminiRerouteProposal.candidateRegion;
         intensity = geminiRerouteProposal.candidateIntensity;
-        decision = decideDeployment({ carbonIntensity: intensity, threshold, slaTier: tier, now });
-        isBelow = decision.decision !== 'QUEUE';
+        
+        decision = {
+          decision: 'REROUTED' as any,
+          status: 'DISPATCHED_TO_GREEN_REGION' as any,
+          reason: `Gemini 2.5 Flash autonomous tool loop rerouted from ${originRegion} (${geminiRerouteProposal.originIntensity} gCO2/kWh) to green region ${targetRegion} (${geminiRerouteProposal.candidateIntensity} gCO2/kWh), abating ${geminiRerouteProposal.estimatedSavingsKg} kg CO2e.`,
+          estWait: 'Now'
+        };
+        isBelow = true;
       }
     } catch (gErr) {
       console.warn('Gemini critical-path reroute proposal notice:', gErr);
@@ -95,13 +111,17 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
   const marginalFossilIntensity = 480; // gCO2eq/kWh marginal fossil baseline
   const baselineEmissionsG = energyKwh * marginalFossilIntensity;
   const actualEmissionsG = energyKwh * intensity;
+  
+  // Calculate verified carbon savings (prioritize Gemini autonomous savings if rerouted)
   const savedGrams = isBelow ? Math.max(0, baselineEmissionsG - actualEmissionsG) : 0;
-  const savedKg = Number((savedGrams / 1000).toFixed(3));
+  const savedKg = geminiRerouteProposal?.estimatedSavingsKg 
+    ? Number(geminiRerouteProposal.estimatedSavingsKg)
+    : Number((savedGrams / 1000).toFixed(3));
   const costUsd = Number((runnerHours * 60 * 0.012).toFixed(2));
 
   const newItem: PersistentQueueItem & { rerouteProposal?: any } = {
     id: workloadId,
-    repo: repo || 'new-microservice',
+    repo: workloadRepo,
     branch: branch || 'main',
     commitSha: commitSha || Math.random().toString(36).substring(2, 9),
     awsRegion: targetRegion,
@@ -196,9 +216,28 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
   let aiOptimization = null;
   if (includeAiAdvice) {
     try {
-      aiOptimization = await generateAiSustainabilityAdvisory();
+      const advisory = await generateAiSustainabilityAdvisory();
+      const resolvedSavings = advisory.potentialSavingsKg ?? geminiRerouteProposal?.estimatedSavingsKg ?? savedKg;
+      aiOptimization = {
+        ...advisory,
+        potentialSavingsKg: resolvedSavings,
+        estimatedSavingsKg: resolvedSavings
+      };
     } catch (e) {
-      console.warn('AI advisory generation skipped:', e);
+      console.warn('AI advisory generation fallback:', e);
+      if (geminiRerouteProposal) {
+        aiOptimization = {
+          recommendation: geminiRerouteProposal.reasoning,
+          potentialSavingsKg: geminiRerouteProposal.estimatedSavingsKg,
+          estimatedSavingsKg: geminiRerouteProposal.estimatedSavingsKg,
+          optimalRegion: geminiRerouteProposal.candidateRegion,
+          actionableSteps: [
+            `Reroute to ${geminiRerouteProposal.candidateRegion} for ${geminiRerouteProposal.candidateIntensity} gCO2eq/kWh`,
+            `Abate ${geminiRerouteProposal.estimatedSavingsKg} kg CO2e emissions`,
+            'Record certified carbon offset block in SHA-256 audit ledger'
+          ]
+        };
+      }
     }
   }
 
