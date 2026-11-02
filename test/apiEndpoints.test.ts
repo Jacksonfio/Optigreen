@@ -19,14 +19,14 @@ describe('OptiGreen REST API Endpoints', () => {
     expect(res.body.gemini).toBeDefined();
     expect(res.body.auditLedger.mode).toBe('LOCAL_SHA256_CHAIN');
     expect(res.body.database).toBeDefined();
-    expect(res.body.database.isDurable).toBe(true);
+    expect(res.body.database.isDurable).toBe(false);
   });
 
   it('GET /api/database/stats returns ACID-safe persistence telemetry', async () => {
     const res = await request(app).get('/api/database/stats');
     expect(res.status).toBe(200);
-    expect(res.body.mode).toBe('PERSISTENT_FILE_ACID');
-    expect(res.body.isDurable).toBe(true);
+    expect(res.body.mode).toBe('CONTAINER_LOCAL_JSON');
+    expect(res.body.isDurable).toBe(false);
     expect(res.body.totalQueued).toBeGreaterThanOrEqual(0);
   });
 

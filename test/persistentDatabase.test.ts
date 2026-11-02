@@ -37,8 +37,8 @@ describe('OptiGreen Persistent Database Service', () => {
     expect(queue.length).toBeGreaterThan(0);
 
     const stats = db.getStats();
-    expect(stats.isDurable).toBe(true);
-    expect(stats.mode).toBe('PERSISTENT_FILE_ACID');
+    expect(stats.isDurable).toBe(false);
+    expect(stats.mode).toBe('CONTAINER_LOCAL_JSON');
   });
 
   it('persists newly enqueued workloads across database reboots', () => {

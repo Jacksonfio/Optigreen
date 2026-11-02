@@ -13,7 +13,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Google Cloud Run](https://img.shields.io/badge/Google_Cloud-Cloud%20Run%20%7C%20Cloud%20Build-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
 [![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.5_Flash_%7C_Autonomous_Tools-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
-[![Vitest](https://img.shields.io/badge/Vitest-3.2%20(76%2F76%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-3.2%20(77%2F77%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![OptiGreen Paper](https://img.shields.io/badge/Semantic_Contract-T01--T20%20(20%2F20%20Passed)-059669?style=for-the-badge)](src/contracts/optigreenContract.ts)
 [![Durable Persistence](https://img.shields.io/badge/Storage-ACID%20Durable%20Disk-10B981?style=for-the-badge&logo=sqlite&logoColor=white)](src/services/persistentDatabase.ts)
 [![Watch Video Demo](https://img.shields.io/badge/YouTube-Watch%20Video%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=XvRZJKy7myo&t=12s)
@@ -146,18 +146,33 @@ OptiGreen is fully deployed and operational on **Google Cloud Platform (GCP)**:
 * Global data center electricity consumption exceeded **460 TWh** in 2024 and is projected to surpass **1,000 TWh by 2026** (comparable to the electricity consumption of Japan), driven by cloud CI/CD pipelines, container compilation, and continuous AI model fine-tuning.
 * Under the European Union **Corporate Sustainability Reporting Directive (CSRD)** and global ESG mandates, enterprise software companies must audit and report **Scope 3 Category 1 (Purchased Cloud Services & Compute)** emissions. Non-compliance carries severe regulatory financial penalties and investor divestment risks.
 
-### 2. Mathematical Proof: How Teams Cut Emissions by 35% – 60%
-Carbon savings are calculated using the official **Greenhouse Gas (GHG) Protocol Scope 3** methodology:
+### 2. Worked Engineering Derivation: How Teams Cut Emissions
+Carbon savings are calculated using the official **Greenhouse Gas (GHG) Protocol Scope 3 Category 1** methodology:
 
 $$\text{Emissions } (gCO_2eq) = \text{Compute Duration (h)} \times \text{Server Power (kW)} \times \text{PUE} \times I_{\text{grid}} (gCO_2eq/\text{kWh})$$
 
-#### Real-World Case Study (Compute-Heavy CI/CD Suite: 16 vCPU, 64 GB RAM, 2.5 kW / 1.5 Hours):
-* **Baseline Execution (Frankfurt `eu-central-1` / Coal-Heavy Grid Peak):**
-  $$E_{\text{baseline}} = 1.5\text{ h} \times 2.5\text{ kW} \times 1.15 \times 412\text{ }gCO_2/\text{kWh} = \mathbf{1,776.7\text{ }gCO_2\text{ (1.78 kg)}}$$
-* **OptiGreen Rerouted Execution (Stockholm `eu-north-1` / Hydro-Wind Grid):**
-  $$E_{\text{green}} = 1.5\text{ h} \times 2.5\text{ kW} \times 1.12 \times 25\text{ }gCO_2/\text{kWh} = \mathbf{105.0\text{ }gCO_2\text{ (0.105 kg)}}$$
-* **Net Reduction per Pipeline:** $\mathbf{94.1\%}$ emissions avoided for that build.
-* **Blended Enterprise Portfolio:** Across an enterprise's monthly distribution of urgent hotfixes (which run immediately) and flexible feature/batch jobs, OptiGreen yields an aggregate **35% to 60% net carbon reduction across all CI/CD pipelines**.
+All models apply a standardized hyperscaler **PUE of 1.15** across all enterprise regions. OptiGreen evaluates two canonical enterprise workload profiles:
+
+#### Profile A: Standard CI/CD Microservice Runner (4 vCPU, 16 GB RAM, 250 W / 15 Minutes)
+* **Energy Consumption:** $0.25\text{ kW} \times 0.25\text{ h} \times 1.15 = \mathbf{0.0719\text{ kWh}}$
+* **Baseline (Frankfurt `eu-central-1` / 412 gCO₂eq/kWh):** $0.0719\text{ kWh} \times 412\text{ g} = \mathbf{29.6\text{ gCO}_2\text{eq}}$
+* **OptiGreen Reroute (Stockholm `eu-north-1` / 25 gCO₂eq/kWh):** $0.0719\text{ kWh} \times 25\text{ g} = \mathbf{1.8\text{ gCO}_2\text{eq}}$
+* **Net Reduction per Microservice Build:** $\mathbf{93.9\%}$ emissions avoided for that build.
+
+#### Profile B: Heavy Batch / ML Integration Test Job (16 vCPU, 64 GB RAM, 2.5 kW / 1.5 Hours)
+* **Energy Consumption:** $2.5\text{ kW} \times 1.5\text{ h} \times 1.15 = \mathbf{4.3125\text{ kWh}}$
+* **Baseline (Frankfurt `eu-central-1` / 412 gCO₂eq/kWh):** $4.3125\text{ kWh} \times 412\text{ g} = \mathbf{1,776.8\text{ gCO}_2\text{eq (1.78 kg)}}$
+* **OptiGreen Reroute (Stockholm `eu-north-1` / 25 gCO₂eq/kWh):** $4.3125\text{ kWh} \times 25\text{ g} = \mathbf{107.8\text{ gCO}_2\text{eq (0.11 kg)}}$
+* **Net Reduction per Batch Build:** $\mathbf{93.9\%}$ emissions avoided for that build.
+
+#### Empirical 1,000-Job Enterprise Portfolio Benchmark:
+Rather than asserting theoretical savings, OptiGreen's decision engine was empirically evaluated across a realistic mix of **1,000 simulated enterprise workloads** with real-world SLA distributions ([`test/empiricalSimulation.test.ts`](test/empiricalSimulation.test.ts)):
+* **Workload Mix:** 107 P1 Hotfixes (10.7%), 563 P2 Features (56.3%), 330 P3 Batch/Nightly builds (33.0%).
+* **Operational Decisions:** 107 emergency overrides (0ms latency penalty), 277 clean-grid direct dispatches, 426 multi-region reroutes, and 190 temporal defers.
+* **Measured Portfolio Results:**
+  * **Unoptimized Baseline:** $373.43\text{ kg CO}_2\text{e}$
+  * **OptiGreen Orchestrated:** $123.71\text{ kg CO}_2\text{e}$
+  * **Net Carbon Abated:** $\mathbf{249.72\text{ kg CO}_2\text{e}}$ (**66.9% measured portfolio carbon reduction**).
 
 ### 3. Broad Market Usability & Zero Adoption Friction
 * **Universal Compatibility:** OptiGreen acts as an HTTP pre-deployment gate. It integrates with **GitHub Actions, GitLab CI, CircleCI, Bitbucket, and Jenkins** using a single 10-line YAML step (`curl POST /api/queue/enqueue`). Developers don't change their Dockerfiles or build scripts.
@@ -542,7 +557,7 @@ sequenceDiagram
 
 ## ⚡ The 6 Core Orchestration Pillars
 
-1. **⚡ Speculative Pre-Build & Hold Engine**: Pre-builds static dependency layers and container images during green grid dips prior to code review approval, reducing final merge deployment time to **< 0.5s**.
+1. **⚡ Speculative Pre-Build & Hold Engine**: Pre-builds static dependency layers and container images during green grid dips prior to code review approval. On cache hit, final merge deployment completes in **< 0.5s**; on cache miss, it seamlessly falls back to standard low-carbon execution.
 2. **🎯 Pareto Multi-Objective Optimizer**: Computes the optimal Pareto frontier balancing **Carbon ($gCO_2/kWh$)**, **Cloud Compute Cost ($\$)**, and **Network Latency ($ms$)** across all 17 regions.
 3. **📊 Per-Step Pipeline Profiler**: Dissects workflows into individual steps (`CHECKOUT`, `TEST_SUITE`, `DOCKER_BUILD`, `SECURITY_SCAN`, `DEPLOYMENT`), attributing exact kilowatt-hours and emissions to each stage.
 4. **🚨 SLA-Tiered Auto-Escalation**:
@@ -550,7 +565,7 @@ sequenceDiagram
    - `P2_FEATURE`: 60-minute maximum deferral before auto-releasing.
    - `P3_BATCH`: Holds until optimal renewable energy window.
 5. **🛡️ Resilient Interceptor & Circuit Breaker**: Wraps all cloud dispatches with exponential backoff, jitter, and automatic circuit breaking (`CLOSED`, `OPEN`, `HALF_OPEN`).
-6. **⛓️ ESG & CSRD Tamper-Evident Audit Ledger**: Hashes every decision into an immutable SHA-256 blockchain with parent-link verification, providing certified compliance proof for EU CSRD Scope 3 audits.
+6. **⛓️ ESG & CSRD Tamper-Evident Audit Ledger**: Hashes every decision into a tamper-evident SHA-256 cryptographic hash-chained audit ledger with parent-link verification, providing certified compliance proof for EU CSRD Scope 3 audits.
 
 ---
 
@@ -566,7 +581,7 @@ OptiGreen includes production-grade integration artifacts directly inside the re
 
 ## 🧪 Testing & Reliability
 
-The platform contains a dedicated **Vitest 3** test suite located in `test/`, with **68 passed unit, integration, and conformance tests across 8 test suites**:
+The platform contains a dedicated **Vitest 3** test suite located in `test/`, with **77 passed unit, integration, and conformance tests across 10 test suites**:
 
 ```bash
 npm test
@@ -576,11 +591,13 @@ npm test
 * **`test/conformanceSuite.test.ts` (20 tests)**: Evaluates the complete **OptiGreen Semantic Contract (T01 – T20)**, validating the 9 record types (`workload`, `observation`, `candidate`, `constraint`, `objective`, `decision`, `action`, `outcome`, `audit`), `NO_FEASIBLE_SOLUTION` first-class recording with failure attribution, error taxonomy (`E_SCHEMA`, `E_UNIT`, `E_VERSION`, `E_CONSTRAINT`, `E_POLICY`, `E_REF`), and 3 conformance levels (L1, L2, L3).
 * **`test/apiEndpoints.test.ts` (12 tests)**: Integration tests verifying REST endpoints (`/api/health`, `/api/integrations/status`, `/api/carbon/all-regions`, `/api/ledger`, `/api/queue/enqueue`, `/api/settings/threshold`, `/api/ai-optimize`, `/api/optigreen/conformance`, `/api/optigreen/solve`, `/api/gemini/copilot`, and `/api/database/stats`).
 * **`test/carbonDecisionEngine.test.ts` (11 tests)**: Verifies PROCEED decisions, HELD queues, P1 hotfixes, P2 60-min SLA auto-escalation, boundary math, and **Pareto Egress vs. Carbon Arbitrage** (vetoing migrations where bandwidth costs exceed emissions value).
+* **`test/geminiCriticalPath.test.ts` (8 tests)**: Verifies Google Gemini 2.5 Flash active tool calling on the deployment critical path, handling live dynamic reroutes, SLA overrides, and error fallbacks.
 * **`test/deploymentInterceptor.test.ts` (7 tests)**: Verifies exponential backoff calculations, retry recovery, maximum retry exhaustion, circuit-breaker tripping, open state rejection, and manual state reset.
 * **`test/auditLedger.test.ts` (5 tests)**: Verifies cryptographic SHA-256 block creation, parent hash chaining, chain integrity verification, and deliberate tamper detection.
 * **`test/awsSqsClient.test.ts` (5 tests)**: Tests dual-mode runtime detection (`LIVE` vs `SANDBOX`), simulated message generation, and AWS SDK v3 SQS dispatch behavior.
 * **`test/googleCloudClient.test.ts` (4 tests)**: Verifies Google Cloud Pub/Sub pipeline fanout, Cloud Run metadata detection, and Artifact Registry container deployment.
-* **`test/persistentDatabase.test.ts` (4 tests)**: Verifies that queued workloads, dispatch activities, and system thresholds persist durably across server reboots, container restarts, and simulated process crashes via ACID-safe atomic writes.
+* **`test/persistentDatabase.test.ts` (4 tests)**: Verifies atomic serialization, ACID safety, and Cloud Run single-writer persistence behavior across simulated reboots.
+* **`test/empiricalSimulation.test.ts` (1 test)**: Empirically simulates 1,000 real-world enterprise workloads across mixed SLA tiers and dual energy profiles, measuring an exact **66.9% net carbon reduction**.
 
 ---
 
@@ -691,7 +708,7 @@ Returns real-time status of AWS SQS (`LIVE` vs `SANDBOX`), Gemini 2.5 Flash (`LI
 ```http
 GET /api/ledger
 ```
-Returns the complete cryptographic blockchain and a live Boolean `verified: true` certificate.
+Returns the complete tamper-evident SHA-256 cryptographic hash chain and a live Boolean `verified: true` certificate.
 
 ---
 
@@ -816,17 +833,17 @@ OptiGreen issues tamper-evident JSON audit blocks matching **CSRD Scope 3 Catego
 
 ## ⚖️ System Assumptions & Engineering Limitations
 
-In the interest of full technical transparency, OptiGreen explicitly documents its operational boundaries and assumptions:
+In the interest of full technical transparency, OptiGreen explicitly documents its operational boundaries and engineering assumptions:
 
 1. **Persistence & Scalability Scope**:
-   * The local file datastore (`data/optigreen_store.json`) provides durable ACID persistence across process crashes and server restarts for single-node deployments.
-   * For horizontally autoscaled Cloud Run deployments (multi-instance container replicas), shared state synchronization across instances is configured via Google Cloud Firestore (`infra/terraform/gcp_main.tf`).
+   * On Google Cloud Run, container filesystems are ephemeral. The live production service operates under a serialized single-writer model (`maxScale: 1`) to ensure local consistency.
+   * For horizontally autoscaled deployments across multi-instance container replicas, state synchronization and pipeline fan-out are governed via Google Cloud Firestore and Cloud Pub/Sub (`infra/terraform/gcp_main.tf`).
 2. **Energy & Carbon Modeling Assumptions**:
-   * **CI/CD Runner Power**: Modeled at **250 W (0.25 kW)** for a standard 4 vCPU / 16 GB cloud compute node.
-   * **Data Center PUE**: Modeled at **1.15** (cloud hyperscaler average).
-   * **Standard Build Duration**: Modeled at **15 minutes (0.25 h)** per CI/CD workflow job.
+   * **Workload Profile A (Microservice CI/CD Runner)**: Modeled at **250 W (0.25 kW)** for a standard 4 vCPU / 16 GB compute node running for **15 minutes (0.25 h)** = **0.0719 kWh**.
+   * **Workload Profile B (Heavy Batch / ML Job)**: Modeled at **2,500 W (2.5 kW)** for a 16 vCPU / 64 GB test cluster running for **90 minutes (1.5 h)** = **4.3125 kWh**.
+   * **Data Center PUE**: Standardized to **1.15** (cloud hyperscaler average) across all modeled global regions.
    * **Marginal Fossil Grid Baseline**: Calibrated to **480 gCO₂eq/kWh** for calculating verified carbon abatement deltas.
-3. **Telemetry Mode**:
+3. **Telemetry & Dual-Mode Execution**:
    * When `ELECTRICITY_API_KEY` is configured, real-time hourly grid telemetry is queried server-side from Electricity Maps v3.
    * In sandbox mode without an API key, the server operates on a calibrated regional baseline with diurnal solar variation to enable zero-config evaluation.
 

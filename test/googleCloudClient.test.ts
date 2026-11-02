@@ -10,7 +10,7 @@ import { globalGoogleCloud } from '../src/services/googleCloudClient';
 describe('Google Cloud Console Suite', () => {
   it('reports production Google Cloud Run service endpoint and configuration', () => {
     const status = globalGoogleCloud.getStatus();
-    expect(status.cloudRun.serviceName).toBe('optigreen-prod');
+    expect(status.cloudRun.serviceName).toBe('optigreen');
     expect(status.cloudRun.endpoint).toContain('.run.app');
     expect(status.cloudRun.containerPort).toBe(8080);
     expect(status.cloudRun.trafficPct).toBe(100);
@@ -31,7 +31,7 @@ describe('Google Cloud Console Suite', () => {
 
     const status = globalGoogleCloud.getStatus();
     expect(status.pubsub.publishedEventsCount).toBeGreaterThan(0);
-    expect(status.pubsub.topic).toContain('projects/optigreen-prod/topics/');
+    expect(status.pubsub.topic).toContain('projects/optigreen-513511/topics/');
   });
 
   it('synchronizes ESG audit ledger blocks to Google Cloud Firestore', async () => {
