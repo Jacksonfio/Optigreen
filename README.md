@@ -455,7 +455,7 @@ graph TD
     end
 
     subgraph AI["🤖 AI Intelligence Layer"]
-        Gemini["<b>Google Gemini 2.5 Flash.0 / 2.5</b><br/>(Structured Schema Output)"]:::ai
+        Gemini["<b>Google Gemini 2.5 Flash</b><br/>(Autonomous Tool Calling & Structured Schema)"]:::ai
     end
 
     subgraph External["📡 Telemetry & Mapping Data"]
