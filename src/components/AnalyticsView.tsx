@@ -38,6 +38,9 @@ export const AnalyticsView: React.FC = () => {
     }
   ];
 
+  const totalAbatedKg = reports.reduce((sum, r) => sum + parseFloat(r.savedCarbon), 0);
+  const treeCount = Math.max(1, Math.round(totalAbatedKg * 0.05));
+
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1440px] mx-auto text-[#E0E0E0]">
       <div>
@@ -51,14 +54,14 @@ export const AnalyticsView: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#141414] p-6 rounded-2xl border border-[#2A2A2A] shadow-xs">
-          <span className="font-code text-xs font-bold text-[#00FF41] uppercase">Monthly Abatement</span>
-          <div className="font-headline text-3xl font-bold text-white mt-2">1,240.5 kg</div>
-          <p className="text-xs text-[#A1A1AA] mt-2">CO2e prevented across 142 deployment runs</p>
+          <span className="font-code text-xs font-bold text-[#00FF41] uppercase">Total Abatement</span>
+          <div className="font-headline text-3xl font-bold text-white mt-2">{totalAbatedKg.toFixed(1)} kg</div>
+          <p className="text-xs text-[#A1A1AA] mt-2">CO2e prevented across {reports.length} verified runs</p>
         </div>
 
         <div className="bg-[#141414] p-6 rounded-2xl border border-[#2A2A2A] shadow-xs">
           <span className="font-code text-xs font-bold text-[#00FF41] uppercase">Tree Equivalent</span>
-          <div className="font-headline text-3xl font-bold text-white mt-2">62 Trees</div>
+          <div className="font-headline text-3xl font-bold text-white mt-2">{treeCount} Trees</div>
           <p className="text-xs text-[#A1A1AA] mt-2">Sequestration equivalent over 10 years</p>
         </div>
 

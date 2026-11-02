@@ -80,6 +80,9 @@ export const ReportsView: React.FC = () => {
     }
   ];
 
+  const totalAbatementKg = Number(reportData.reduce((sum, r) => sum + parseFloat(r.savedCarbon), 0).toFixed(1));
+  const totalTrees = Math.max(1, Math.round(totalAbatementKg * 0.05));
+
   const handleDownloadReport = () => {
     setDownloadSuccess(true);
     setTimeout(() => setDownloadSuccess(false), 3000);
@@ -94,10 +97,10 @@ export const ReportsView: React.FC = () => {
         selectedRepo,
         selectedRegion,
         summaryMetrics: {
-          totalAbatementKg: 1240.5,
-          treesEquivalent: 62,
+          totalAbatementKg,
+          treesEquivalent: totalTrees,
           complianceRate: '100%',
-          totalRuns: 142
+          totalRuns: reportData.length
         },
         reportData
       };
@@ -156,8 +159,8 @@ export const ReportsView: React.FC = () => {
 
               <div class="summary">
                 <h3>Executive Summary</h3>
-                <p>Total Carbon Abatement: <strong>1,240.5 kg CO2e</strong></p>
-                <p>Tree Sequestration Equivalent: <strong>62 Trees</strong></p>
+                <p>Total Carbon Abatement: <strong>${totalAbatementKg} kg CO2e</strong></p>
+                <p>Tree Sequestration Equivalent: <strong>${totalTrees} Trees</strong></p>
                 <p>S3 Audit Verification Status: <strong>100% Passed ESG Compliance</strong></p>
               </div>
 
@@ -318,13 +321,13 @@ export const ReportsView: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#141414] p-6 rounded-2xl border border-[#2A2A2A]">
           <span className="font-code text-xs font-bold text-[#00FF41] uppercase">Total Abatement</span>
-          <div className="font-headline text-3xl font-bold text-white mt-2">1,240.5 kg</div>
-          <p className="text-xs text-[#A1A1AA] mt-2">CO2e prevented across 142 deployment runs</p>
+          <div className="font-headline text-3xl font-bold text-white mt-2">{totalAbatementKg} kg</div>
+          <p className="text-xs text-[#A1A1AA] mt-2">CO2e prevented across {reportData.length} deployment runs</p>
         </div>
 
         <div className="bg-[#141414] p-6 rounded-2xl border border-[#2A2A2A]">
           <span className="font-code text-xs font-bold text-[#00FF41] uppercase">Tree Equivalent</span>
-          <div className="font-headline text-3xl font-bold text-white mt-2">62 Trees</div>
+          <div className="font-headline text-3xl font-bold text-white mt-2">{totalTrees} Trees</div>
           <p className="text-xs text-[#A1A1AA] mt-2">Sequestration equivalent over 10 years</p>
         </div>
 

@@ -176,7 +176,14 @@ export const QueueView: React.FC<QueueViewProps> = ({
         <div className="bg-[#141414] p-6 rounded-2xl border-t-4 border-t-[#00FF41] border-x border-b border-[#2A2A2A] shadow-xs relative overflow-hidden">
           <span className="text-[#A1A1AA] font-code text-xs uppercase font-medium">CO2 Avoidance</span>
           <div className="flex items-baseline gap-1 mt-1">
-            <span className="font-headline text-3xl font-bold text-white">42.8</span>
+            <span className="font-headline text-3xl font-bold text-white">
+              {queue.reduce((sum, item) => {
+                if (item.carbonIntensity > threshold) {
+                  return sum + Math.max(0, (item.carbonIntensity - threshold) * 0.05);
+                }
+                return sum;
+              }, 0).toFixed(1)}
+            </span>
             <span className="text-sm text-[#A1A1AA]">kg</span>
           </div>
           <div className="mt-4 flex items-center gap-1 text-[#00FF41] text-xs font-bold">
@@ -371,7 +378,9 @@ export const QueueView: React.FC<QueueViewProps> = ({
                 <span className="font-code text-[11px] font-bold text-[#A1A1AA] uppercase">
                   Queued Savings
                 </span>
-                <div className="text-lg font-bold text-[#00FF41] mt-1">12.4kg CO2</div>
+                <div className="text-lg font-bold text-[#00FF41] mt-1">
+                  {(queue.reduce((sum, q) => sum + Math.max(0, (q.carbonIntensity - threshold) * 0.05), 0)).toFixed(1)}kg CO2
+                </div>
               </div>
               <div className="p-4 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A]">
                 <span className="font-code text-[11px] font-bold text-[#A1A1AA] uppercase">

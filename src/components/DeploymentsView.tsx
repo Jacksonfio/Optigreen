@@ -134,7 +134,11 @@ export const DeploymentsView: React.FC<DeploymentsViewProps> = ({
             <Layers className="w-4 h-4 text-[#F59E0B]" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-headline text-3xl font-bold text-[#F59E0B]">42.8kg</span>
+            <span className="font-headline text-3xl font-bold text-[#F59E0B]">
+              {activities.length > 0
+                ? `${activities.reduce((sum, act) => sum + (Number(act.savedKg) || 0), 0).toFixed(1)}kg`
+                : '0.0kg'}
+            </span>
             <button
               onClick={onNavigateToQueue}
               className="text-[11px] text-[#F59E0B] hover:underline font-bold ml-auto"
