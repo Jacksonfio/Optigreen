@@ -30,7 +30,6 @@
 ## 📋 Table of Contents
 
 - [Overview & The Problem](#-overview--the-problem)
-- [🏆 Hackathon Multi-Agent Evaluation & Rubric Audit (12 Aspects)](#-hackathon-multi-agent-evaluation--rubric-audit-12-aspects)
 - [📜 Research Paper & Formal Semantic Contract](#-research-paper--formal-semantic-contract)
 - [☁️ Google Cloud Console & Serverless Deployment](#️-google-cloud-console--serverless-deployment)
 - [🌍 Potential Impact & Real-World Feasibility](#-potential-impact--real-world-feasibility)
@@ -64,54 +63,6 @@ Traditional CI/CD tools (GitHub Actions, GitLab CI, Jenkins) execute workloads b
 2. **Defer**: Hold non-urgent pipelines in carbon-aware SQS queues until regional solar/wind peaks occur, strictly governed by business SLA tier constraints.
 3. **Speculatively Pre-Build**: Warm container layer artifacts during transient green energy dips before code merges occur, cutting final deployment latency from **180s down to < 0.5s**.
 4. **Cryptographic Proof**: Record tamper-evident SHA-256 hash chains compliant with **EU CSRD Scope 3** sustainability audits.
-
----
-
-## 🏆 Hackathon Multi-Agent Evaluation & Rubric Audit (12 Aspects)
-
-*Benchmarked against the **Markwise.in Multi-Agent Evaluator Model** and official **MLH / Google Cloud partner criteria**.*
-
-### 🎯 4-Axis Markwise.in Radar Chart Verification
-
-```
-                              Use of Google Gemini
-                                     [96%]
-                                       ▲
-                                       │
-                                       │
-               Impact & Usefulness ────┼──── Google Cloud Console
-                      [90%]            │            [92%]
-                                       │
-                                       ▼
-                              Innovation & Idea
-                                     [92%]
-```
-
-- **Use of Google Gemini (96%):** Native `@google/genai` SDK with `gemini-2.5-flash`, real autonomous multi-turn tool calling on the workload enqueue critical path (`inspectRegionalGridTelemetry`, `evaluateWanEgressVeto`, `dispatchWorkloadMigration`, `escalateP1Hotfix`).
-- **Google Cloud Console (92%):** Live production Google Cloud Run serverless microservice deployed in `asia-south1` (Mumbai) at [`https://optigreen-368696905831.asia-south1.run.app/`](https://optigreen-368696905831.asia-south1.run.app/), with automated Cloud Build continuous deployment from GitHub.
-- **Innovation & Idea (92%):** Pareto WAN Egress Arbitrage formula + formal OptiGreen Semantic Contract (T01–T20) standardizing multi-objective CI/CD orchestration.
-- **Impact & Usefulness (90%):** Dynamic SHA-256 cryptographic audit ledger producing exportable EU CSRD Scope 3 Category 1 digital footprint disclosures.
-
----
-
-### 👥 The 5 Evaluator Personas & 12 Rubric Aspects
-
-| # | Aspect / Criterion | Score (/10) | Primary Persona | Strengths & Verified Code Evidence |
-|---|---|:---:|---|---|
-| **1** | **Code Structure & Modularity** | **9.2** | Code Structure Analyst | Monolithic `server.ts` refactored into a clean 60-line entrypoint. Route controllers are cleanly isolated under [`src/controllers/`](src/controllers/) (`queueController`, `geminiController`, `carbonController`, `optigreenController`, `systemController`). Zero TypeScript lint errors (`tsc --noEmit` exits 0). |
-| **2** | **Technical Implementation & Conformance** | **9.3** | Technical Evaluator | **76/76 automated Vitest tests passing** across 9 suites in ~3.5s. Full programmatic OptiGreen Semantic Contract Conformance Runner executing tests T01–T20. Real SHA-256 cryptographic block chaining with tamper-detection unit tests in [`test/auditLedger.test.ts`](test/auditLedger.test.ts). Durable ACID atomic write-ahead disk storage. |
-| **3** | **Critical Review & Honesty of Claims** | **9.2** | Critical Reviewer | All Scope 3 avoided carbon metrics in [`src/components/EsgComplianceView.tsx`](src/components/EsgComplianceView.tsx) are computed dynamically from real ledger blocks via `.reduce()`. The carbon telemetry engine implements a documented **Provider Pattern** (`DIURNAL_GRID_MODEL` vs `ELECTRICITY_MAPS_API`) returning verified operational status with zero misleading claims. |
-| **4** | **Partner Eligibility — Google Gemini API** | **9.6** | Technical Evaluator | Official `@google/genai` SDK is imported and configured with a verified live key. Gemini is on the **CRITICAL PATH** of workload ingestion in [`src/controllers/queueController.ts`](src/controllers/queueController.ts). Implements a real multi-turn tool-calling loop with 4 registered function declarations; automated test suite [`test/geminiCriticalPath.test.ts`](test/geminiCriticalPath.test.ts) proves live tool execution. |
-| **5** | **Innovation & Novelty** | **9.2** | Innovation Evaluator | Novel Pareto WAN Egress Arbitrage formula mathematically balances cross-region network transfer energy costs against remote renewable grid intensity savings. Formal OptiGreen Semantic Contract specification standardizing multi-objective CI/CD orchestration. |
-| **6** | **Google Cloud Console & Architecture** | **9.2** | Technical Evaluator | Fully operational serverless deployment on **Google Cloud Run** ([`https://optigreen-368696905831.asia-south1.run.app/`](https://optigreen-368696905831.asia-south1.run.app/)). Automated continuous deployment via **Google Cloud Build** triggers on `main`. Infrastructure as Code defined in [`infra/terraform/gcp_main.tf`](infra/terraform/gcp_main.tf), [`cloudbuild.yaml`](cloudbuild.yaml), and multi-stage [`Dockerfile`](Dockerfile). |
-| **7** | **Impact & Environmental Usefulness** | **9.0** | Presentation & UX Evaluator | Directly addresses EU Corporate Sustainability Due Diligence Directive (CSDDD), SEC Climate Disclosures, and EFRAG ESRS E1 standards. Exports verifiable JSON audit logs for enterprise Scope 3 Category 1 digital supply chain reporting. |
-| **8** | **Impact & Technical Feasibility** | **9.2** | Technical Evaluator | Drop-in middleware architecture deployable as a pre-commit webhook or proxy before GitHub Actions, GitLab CI, or ArgoCD. Built-in circuit breakers, exponential backoff, and strict SLA deadlines guarantee zero blocked builds. |
-| **9** | **Learning & Ambition** | **9.4** | Innovation Evaluator | Highly interdisciplinary engineering: environmental grid physics, cryptographically chained audit ledgers, Gemini tool-calling loops, ACID file storage, and interactive 3D WebGL globe visualizations. |
-| **10** | **Creativity & Problem Solving** | **9.0** | Innovation Evaluator | Inverts typical CI/CD scheduling by treating carbon emissions as a first-class routing parameter alongside latency and budget. Speculative pre-building during green windows represents creative mitigation of build deferral latency. |
-| **11** | **Demo Clarity & Interactivity** | **8.8** | Presentation & UX Evaluator | Comprehensive dashboard with dark-mode cyberpunk UI, real-time regional heatmap with 17 AWS zones, interactive Gemini Intelligence Copilot, live Conformance Test runner, and simulated chaos injection. |
-| **12** | **Presentation & Submission Completeness** | **8.5** | Presentation & UX Evaluator | Comprehensive README, formal academic-style specification paper in repository, comprehensive OpenAPI endpoints documentation, and verified live Cloud Run deployment link ready for live judge interaction. |
-
-$$\text{Composite Score: } \mathbf{109.6 \,/\, 120} \quad \longrightarrow \quad \mathbf{9.1 \,/\, 10.0}$$
 
 ---
 
