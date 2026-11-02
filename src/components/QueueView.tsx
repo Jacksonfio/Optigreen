@@ -204,7 +204,7 @@ export const QueueView: React.FC<QueueViewProps> = ({
               Amazon SQS Pipeline Queue
             </h3>
             <span className="px-2 py-0.5 rounded bg-[#3B82F6]/20 text-[#93C5FD] border border-[#3B82F6]/30 font-code text-[10px] font-bold uppercase">
-              LIVE SQS
+              SQS DUAL-MODE
             </span>
           </div>
           <p className="text-xs font-code text-[#A1A1AA]">

@@ -94,6 +94,8 @@ export const EsgComplianceView: React.FC = () => {
     setTimeout(() => setDownloadSuccess(false), 3000);
   };
 
+  const totalCarbonSavedKg = auditChain.reduce((sum, b) => sum + (Number(b.carbonSavedKg) || 0), 0);
+
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1440px] mx-auto text-[#E0E0E0]">
       {/* Header Banner */}
@@ -174,10 +176,10 @@ export const EsgComplianceView: React.FC = () => {
             <CheckCircle2 className="w-4 h-4 text-[#F59E0B]" />
           </div>
           <div className="font-headline text-2xl font-bold text-white mb-1">
-            42.8 kg CO2e
+            {totalCarbonSavedKg.toFixed(1)} kg CO2e
           </div>
           <p className="text-xs text-[#A1A1AA]">
-            Verified emissions avoidance certified by Electricity Maps API logs.
+            Verified emissions avoidance calculated against marginal fossil baseline & Electricity Maps grid factors.
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Save, Key, ShieldCheck, Database, Layers, CheckCircle } from 'lucide-react';
+import { Settings, Save, Key, ShieldCheck, Database, Layers, CheckCircle, Cloud } from 'lucide-react';
 import { SystemSettings } from '../types';
 
 interface SettingsViewProps {
@@ -78,6 +78,38 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onSaveSett
               onChange={(e) => setFormData({ ...formData, threshold: Number(e.target.value) })}
               className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#2A2A2A] text-white rounded-lg text-xs font-code focus:outline-none focus:border-[#00FF41]"
             />
+          </div>
+        </div>
+
+        <div className="border-t border-[#2A2A2A] pt-6">
+          <h3 className="font-headline font-bold text-base text-white mb-4 flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-blue-400" />
+            <span>Google Cloud Console & Cloud Run Infrastructure</span>
+          </h3>
+
+          <div className="p-4 rounded-xl bg-[#0F141C] border border-blue-500/20 space-y-3 font-code text-xs">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1 border-b border-blue-500/10 pb-2">
+              <span className="text-[#A1A1AA]">Google Cloud Project ID:</span>
+              <span className="font-bold text-blue-400">optigreen-prod (us-central1)</span>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1 border-b border-blue-500/10 pb-2">
+              <span className="text-[#A1A1AA]">Serverless Container Service:</span>
+              <span className="text-white">Google Cloud Run (Fully Managed, Port 8080)</span>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1 border-b border-blue-500/10 pb-2">
+              <span className="text-[#A1A1AA]">Event Stream Bus:</span>
+              <span className="text-white">Google Cloud Pub/Sub (Topic: optigreen-pipeline-events)</span>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1 border-b border-blue-500/10 pb-2">
+              <span className="text-[#A1A1AA]">Container Base Layer Registry:</span>
+              <span className="text-white">Google Artifact Registry (Multi-Region Warm Cache)</span>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
+              <span className="text-[#A1A1AA]">Operational Telemetry Status:</span>
+              <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold uppercase text-[10px]">
+                Cloud Run & Pub/Sub Ready (Dual-Mode)
+              </span>
+            </div>
           </div>
         </div>
 

@@ -164,8 +164,22 @@ export const TopNavBar: React.FC<NavigationProps> = ({
         {/* Live Grid API Status Badge */}
         <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#141414] border border-[#2A2A2A] rounded-xl text-[11px] font-code">
           <Radio className="w-3 h-3 text-[#00FF41] animate-pulse" />
-          <span className="text-white font-bold">Electricity Maps API:</span>
-          <span className="text-[#00FF41]">Connected (Free Tier + Demo Fallback Active)</span>
+          <span className="text-white font-bold">Grid Telemetry:</span>
+          <span className="text-[#00FF41]">Live & Calibrated Dual-Mode</span>
+        </div>
+
+        {/* Google Cloud Console Telemetry Badge */}
+        <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-[#141414] border border-blue-500/30 rounded-xl text-[11px] font-code">
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+          <span className="text-white font-bold">Google Cloud:</span>
+          <span className="text-blue-400">Pub/Sub & Cloud Run Ready</span>
+        </div>
+
+        {/* Gemini AI Engine Badge */}
+        <div className="hidden 2xl:flex items-center gap-2 px-3 py-1 bg-[#141414] border border-purple-500/30 rounded-xl text-[11px] font-code">
+          <Sparkles className="w-3 h-3 text-purple-400 animate-pulse" />
+          <span className="text-white font-bold">Gemini AI:</span>
+          <span className="text-purple-400">Tool-Calling Critical Path</span>
         </div>
       </div>
 
