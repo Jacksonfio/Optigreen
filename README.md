@@ -4,7 +4,7 @@
 
 ### **Zero-Emissions Pipeline Middleware, SLA Policy Engine & ESG Compliance Ledger**
 
-*Dynamically intercept, optimize, and route cloud compute workloads to the greenest global AWS regions based on real-time electricity grid carbon intensity ($gCO_2eq/kWh$) powered by Google Gemini 3.*
+*Dynamically intercept, optimize, and route cloud compute workloads to the greenest global AWS regions based on real-time electricity grid carbon intensity ($gCO_2eq/kWh$) powered by Google Gemini 2.5 Flash.*
 
 ---
 
@@ -187,14 +187,14 @@ $$\text{Emissions } (gCO_2eq) = \text{Compute Duration (h)} \times \text{Server 
 ### 1. The Core User Journey
 1. **Developer Commits Code**: A commit triggers the OptiGreen Webhook Interceptor.
 2. **Real-Time Telemetry & SLA Evaluation**: The engine queries regional grid intensity ($gCO_2eq/kWh$) against organization carbon thresholds ($250 gCO_2/kWh$) and the commit's SLA tier (`P1_HOTFIX`, `P2_FEATURE`, `P3_BATCH`).
-3. **Gemini 3 Multi-Constraint Reasoning**: When grid emissions are high, Gemini 3 evaluates alternative regions, network egress penalties, and optimal solar/wind time windows.
+3. **Gemini 2.5 Flash Multi-Constraint Reasoning**: When grid emissions are high, Gemini 2.5 Flash evaluates alternative regions, network egress penalties, and optimal solar/wind time windows.
 4. **Action Dispatch**: Workload either dispatches immediately to green compute (`PROCEED`), routes to a cleaner region (`REROUTE`), or queues in AWS SQS (`HELD`).
 5. **CSRD Audit Signature**: A cryptographically signed SHA-256 block links the decision into the immutable audit ledger.
 
 ### 2. Interactive Features in the Dashboard
 * **HD Esri Satellite Map & Live Grid Layer**: Interactive Leaflet globe rendering real-time carbon intensity badges and renewable energy shares across all 17 AWS regions.
 * **Pareto Multi-Objective Frontier**: Visualizes the mathematical trade-off curve between Carbon ($gCO_2$), Cost ($\$$), and Latency ($ms$).
-* **AI Advisor Modal**: Powered by Google Gemini 3 (`gemini-3-flash-preview` / `gemini-3-pro-preview`) providing actionable DevOps workload shifting strategies with guaranteed JSON schema compliance.
+* **AI Advisor Modal**: Powered by Google Gemini 2.5 Flash (`gemini-2.5-flash` / `gemini-2.5-pro`) providing actionable DevOps workload shifting strategies with guaranteed JSON schema compliance.
 * **Fault Simulator & Circuit Breaker**: Live injection of SQS connection timeouts and rate limits to verify exponential backoff and circuit breaker state transitions (`CLOSED` -> `OPEN` -> `HALF_OPEN`).
 * **CSRD / ESG Compliance Portal**: Real-time inspection and verification of the SHA-256 block ledger with downloadable JSON audit certificates.
 
@@ -208,7 +208,7 @@ $$\text{Emissions } (gCO_2eq) = \text{Compute Duration (h)} \times \text{Server 
 | :--- | :--- | :--- | :--- |
 | **Grid Awareness** | ❌ Blind execution in fixed region | ⚠️ Post-hoc static reporting after emissions occurred | ✅ **Pre-emptive, real-time grid interception** |
 | **Orchestration** | ❌ Run immediately or manual trigger | ❌ Read-only metric dashboards | ✅ **Automated hold, route, speculative build, and SLA escalation** |
-| **Reasoning Engine** | ❌ Static yaml configurations | ❌ Hardcoded threshold rules | ✅ **Google Gemini 3 active tool-calling & structured JSON schema reasoning** |
+| **Reasoning Engine** | ❌ Static yaml configurations | ❌ Hardcoded threshold rules | ✅ **Google Gemini 2.5 Flash active tool-calling & structured JSON schema reasoning** |
 | **Multi-Objective Solver** | ❌ None | ❌ Single metric | ✅ **Pareto Frontier (Carbon vs. Cost vs. Latency)** |
 | **Compliance Audit** | ❌ Plain text build logs | ⚠️ Unsigned CSV exports | ✅ **Tamper-evident SHA-256 cryptographic hash-chained ledger** |
 
@@ -227,7 +227,7 @@ The live integration status is inspectable anytime at `GET /api/integrations/sta
 
 | Service | Live Mode (Configured) | Sandbox Mode (Default / Offline) |
 | :--- | :--- | :--- |
-| **Google Gemini AI** | Real `@google/genai` calls to `gemini-3-flash-preview` with strict JSON schema enforcement | Deterministic heuristic advisory generator matching schema |
+| **Google Gemini AI** | Real `@google/genai` calls to `gemini-2.5-flash` with strict JSON schema enforcement | Deterministic heuristic advisory generator matching schema |
 | **AWS SQS** | Real queue dispatch & receipt via `@aws-sdk/client-sqs` (`SendMessageCommand`, `ReceiveMessageCommand`) | In-memory priority queue with simulated message IDs (`sim-*`) |
 | **Electricity Maps v3** | Live carbon telemetry ($gCO_2eq/kWh$) per regional zone | Calibrated synthetic grid model with real-time fluctuation noise |
 | **ESG Audit Ledger** | Real SHA-256 Web Crypto hash-chained ledger served at `GET /api/ledger` | **Identical**: Cryptographic hashing runs locally and is always real |
@@ -238,9 +238,9 @@ The live integration status is inspectable anytime at `GET /api/integrations/sta
 
 ## 🤖 Use of Google Gemini (Build with Gemini — Chennai Track)
 
-OptiGreen is built for the **Build with Gemini — Chennai** hackathon, targeting the **Best Use of the Google Gemini API** prize category by pushing the boundaries of what's possible with **Google Gemini 3** (`gemini-3-flash-preview` / `gemini-3-pro-preview`) using the official `@google/genai` TypeScript SDK.
+OptiGreen is built for the **Build with Gemini — Chennai** hackathon, targeting the **Best Use of the Google Gemini API** prize category by pushing the boundaries of what's possible with **Google Gemini 2.5 Flash** (`gemini-2.5-flash` / `gemini-2.5-pro`) using the official `@google/genai` TypeScript SDK.
 
-### 🌟 Active Autonomous Tool Calling (Function Calling with Gemini 3)
+### 🌟 Active Autonomous Tool Calling (Function Calling with Gemini 2.5 Flash)
 
 Unlike passive chatbots that only generate conversational text, OptiGreen equips Google Gemini with **native function declarations** (`geminiCopilotTools`) using `Type.OBJECT`. Gemini directly inspects cloud infrastructure, calculates multi-region arbitrage math, and drives deployment actions:
 
@@ -249,7 +249,7 @@ sequenceDiagram
     autonumber
     actor Dev as 👨‍💻 Engineer / Webhook
     participant Server as ⚡ OptiGreen Server
-    participant Gemini as 🤖 Google Gemini 3
+    participant Gemini as 🤖 Google Gemini 2.5 Flash
     participant Engine as 🛡️ Decision Engine / Database
 
     Dev->>Server: POST /api/gemini/copilot { prompt, mode }
@@ -262,7 +262,7 @@ sequenceDiagram
     Server-->>Dev: HTTP 200 OK { reply, mode, toolsExecuted, modeStatus: "LIVE" }
 ```
 
-#### The 4 Autonomous Tools Declared to Gemini 3:
+#### The 4 Autonomous Tools Declared to Gemini 2.5 Flash:
 1. **`evaluateCrossRegionMigration`**: Evaluates the economic and carbon trade-offs of migrating a build across regions, accounting for WAN egress costs ($/GB) vs. carbon abatement value ($/ton).
 2. **`queryRegionalGridTelemetry`**: Queries live and forecasted carbon intensity ($gCO_2eq/kWh$) and renewable percentages across regions.
 3. **`inspectPersistentWorkloadQueue`**: Inspects workloads in the ACID datastore (`held`, `running`, `completed`, and SLA countdowns).
@@ -316,19 +316,19 @@ A critical security anti-pattern in production AI systems is invoking AI SDKs fr
 * `process.env.GEMINI_API_KEY` is loaded exclusively into server memory and never delivered to the client bundle.
 * The frontend React application interacts with Gemini through `/api/ai-optimize` and `/api/gemini/copilot`.
 
-### 2. Two-Tier Hybrid Architecture (Deterministic Edge Gate + Gemini 3 Macro-Scheduler)
+### 2. Two-Tier Hybrid Architecture (Deterministic Edge Gate + Gemini 2.5 Flash Macro-Scheduler)
 A naive AI architecture forces every single git commit to block on a 1500ms LLM round-trip, degrading developer velocity and wasting compute. OptiGreen adopts an **industry-standard two-tier hybrid architecture**:
 * **Tier 1 — Sub-Millisecond Deterministic Edge Gate (< 5ms):**
   When a webhook hits `POST /api/queue/enqueue`, the deterministic SLA engine ([`carbonDecisionEngine.ts`](src/services/carbonDecisionEngine.ts)) evaluates threshold boundaries, SLA policies (`P1_HOTFIX` 0ms override, `P2_FEATURE` 60-min limit), and Pareto arbitrage math in under 5 milliseconds. Workloads are instantly queued or deployed without waiting for network LLM latency.
-* **Tier 2 — Google Gemini 3 Strategic Macro-Optimizer:**
-  Gemini 3 operates at the macro orchestration layer (`POST /api/ai-optimize` and `POST /api/gemini/copilot`). As queued workloads accumulate across the multi-cloud topology, Gemini continuously analyzes grid trends, queue backlogs, and multi-region routing trade-offs.
+* **Tier 2 — Google Gemini 2.5 Flash Strategic Macro-Optimizer:**
+  Gemini 2.5 Flash operates at the macro orchestration layer (`POST /api/ai-optimize` and `POST /api/gemini/copilot`). As queued workloads accumulate across the multi-cloud topology, Gemini continuously analyzes grid trends, queue backlogs, and multi-region routing trade-offs.
 
 ### 3. Deterministic Structured JSON Schema Enforcement
 OptiGreen enforces **Google Gemini's native structured JSON outputs** via `Type.OBJECT`:
 
 ```typescript
 const response = await ai.models.generateContent({
-  model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+  model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
   contents: prompt,
   config: {
     responseMimeType: 'application/json',
@@ -350,8 +350,8 @@ const response = await ai.models.generateContent({
 ```
 
 ### 4. Model Strategy: Sub-Second Latency vs. Deep Portfolio Reasoning
-* **`gemini-3-flash-preview` (Default):** Delivers sub-second inference latency, essential for intercepting CI/CD webhooks without delaying developer commit workflows.
-* **`gemini-3-pro-preview` (Configurable via `GEMINI_MODEL`):** Available for complex, enterprise-wide multi-cloud portfolio analysis across hundreds of concurrent pipelines.
+* **`gemini-2.5-flash` (Default):** Delivers sub-second inference latency, essential for intercepting CI/CD webhooks without delaying developer commit workflows.
+* **`gemini-2.5-pro` (Configurable via `GEMINI_MODEL`):** Available for complex, enterprise-wide multi-cloud portfolio analysis across hundreds of concurrent pipelines.
 
 ---
 
@@ -440,7 +440,7 @@ graph TD
     end
 
     subgraph AI["🤖 AI Intelligence Layer"]
-        Gemini["<b>Google Gemini 3.0 / 2.5</b><br/>(Structured Schema Output)"]:::ai
+        Gemini["<b>Google Gemini 2.5 Flash.0 / 2.5</b><br/>(Structured Schema Output)"]:::ai
     end
 
     subgraph External["📡 Telemetry & Mapping Data"]
@@ -663,7 +663,7 @@ Content-Type: application/json
 }
 ```
 
-### 5. Google Gemini 3 AI Sustainability Optimization
+### 5. Google Gemini 2.5 Flash AI Sustainability Optimization
 ```http
 POST /api/ai-optimize
 ```
@@ -685,7 +685,7 @@ POST /api/ai-optimize
 ```http
 GET /api/integrations/status
 ```
-Returns real-time status of AWS SQS (`LIVE` vs `SANDBOX`), Gemini 3 (`LIVE` vs `SANDBOX`), Electricity Maps, and the cryptographic ledger.
+Returns real-time status of AWS SQS (`LIVE` vs `SANDBOX`), Gemini 2.5 Flash (`LIVE` vs `SANDBOX`), Electricity Maps, and the cryptographic ledger.
 
 ### 7. SHA-256 Audit Ledger Verification
 ```http
@@ -729,11 +729,11 @@ optigreen-scheduler/
 │   │   └── resilientApiClient.ts       # Rate-limited resilient HTTP client
 │   └── components/                    # UI Components
 │       ├── AWSRegionsView.tsx         # AWS Region map & dispatch manager
-│       ├── AiAdvisorModal.tsx         # Gemini 3 Advisory modal
+│       ├── AiAdvisorModal.tsx         # Gemini 2.5 Flash Advisory modal
 │       ├── AnalyticsView.tsx          # Real-time emission charts
 │       ├── DashboardView.tsx          # Main operations dashboard
 │       ├── EsgComplianceView.tsx      # CSRD SHA-256 ledger viewer
-│       ├── GeminiCopilotView.tsx      # Gemini 3 Copilot with real autonomous tool execution
+│       ├── GeminiCopilotView.tsx      # Gemini 2.5 Flash Copilot with real autonomous tool execution
 │       ├── InterceptorMonitorModal.tsx# Resilience & circuit breaker telemetry
 │       ├── LiveCarbonView.tsx         # Leaflet + Esri satellite interactive map
 │       ├── LoginView.tsx              # Google Sign-In & authentication modal
@@ -752,7 +752,7 @@ optigreen-scheduler/
 │   └── persistentDatabase.test.ts     # ACID disk durability tests (4 passed)
 ├── .env.example                       # Environment template with dual-mode docs
 ├── package.json                       # Dependencies & scripts
-├── server.ts                          # Express backend & Gemini 3 router
+├── server.ts                          # Express backend & Gemini 2.5 Flash router
 ├── tsconfig.json                      # TypeScript config
 ├── vite.config.ts                     # Vite bundler config
 └── vitest.config.ts                   # Vitest unit test runner config

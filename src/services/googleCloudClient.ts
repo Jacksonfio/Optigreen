@@ -54,12 +54,12 @@ class GoogleCloudClient {
 
   constructor() {
     this.config = {
-      projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.GCP_PROJECT || 'optigreen-prod',
-      region: process.env.GOOGLE_CLOUD_REGION || 'us-central1',
-      cloudRunService: 'optigreen-prod',
-      pubsubTopic: 'projects/optigreen-prod/topics/pipeline-events',
+      projectId: process.env.GOOGLE_CLOUD_PROJECT || process.env.GCP_PROJECT || 'optigreen-513511',
+      region: process.env.GOOGLE_CLOUD_REGION || 'asia-south1',
+      cloudRunService: process.env.K_SERVICE || 'optigreen',
+      pubsubTopic: 'projects/optigreen-513511/topics/pipeline-events',
       firestoreCollection: 'optigreen-audit-ledger',
-      artifactRegistry: 'us-central1-docker.pkg.dev/optigreen-prod/optigreen-images'
+      artifactRegistry: 'asia-south1-docker.pkg.dev/optigreen-513511/cloud-run-source-deploy/optigreen'
     };
   }
 
@@ -99,7 +99,7 @@ class GoogleCloudClient {
   }
 
   public getStatus(): GoogleCloudStatus {
-    const isLive = Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.K_SERVICE);
+    const isLive = Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.K_SERVICE || process.env.PORT);
 
     return {
       mode: isLive ? 'LIVE' : 'SANDBOX',
@@ -107,9 +107,9 @@ class GoogleCloudClient {
       primaryRegion: this.config.region,
       cloudRun: {
         serviceName: this.config.cloudRunService,
-        endpoint: 'https://optigreen-prod-7182937492-uc.a.run.app',
+        endpoint: 'https://optigreen-368696905831.asia-south1.run.app',
         trafficPct: 100,
-        containerPort: 8080
+        containerPort: Number(process.env.PORT) || 8080
       },
       pubsub: {
         topic: this.config.pubsubTopic,
@@ -123,7 +123,7 @@ class GoogleCloudClient {
       },
       artifactRegistry: {
         repository: this.config.artifactRegistry,
-        targetRegions: ['us-central1', 'europe-north1', 'europe-west1'],
+        targetRegions: ['asia-south1', 'europe-north1', 'us-west-2'],
         cachingStrategy: 'MULTI_REGION_WARM'
       }
     };

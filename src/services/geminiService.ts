@@ -46,7 +46,7 @@ export interface EnqueueWorkloadContext {
 }
 
 // -----------------------------------------------------------------------------
-// Official Gemini 3 Function Declarations for Autonomous CI/CD Orchestration
+// Official Gemini 2.5 Flash Function Declarations for Autonomous CI/CD Orchestration
 // -----------------------------------------------------------------------------
 export const GEMINI_TOOL_DECLARATIONS = [
   {

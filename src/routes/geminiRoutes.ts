@@ -1,5 +1,5 @@
 /**
- * OptiGreen Gemini 3 AI Copilot & Optimization Routes
+ * OptiGreen Gemini 2.5 Flash AI Copilot & Optimization Routes
  */
 
 import { Router } from 'express';

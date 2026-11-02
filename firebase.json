@@ -10,8 +10,8 @@
       {
         "source": "/api/**",
         "run": {
-          "serviceId": "optigreen-scheduler",
-          "region": "us-central1"
+          "serviceId": "optigreen",
+          "region": "asia-south1"
         }
       },
       {

@@ -37,7 +37,7 @@ export const GeminiCopilotView: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `👋 **Welcome to the OptiGreen Gemini Intelligence Copilot!**\n\nI am powered by **Google Gemini 2.5 Flash / Gemini 3** to optimize cloud CI/CD pipelines, synthesize peer-reviewed sustainability research, and generate production infrastructure code.\n\nHow can I assist your engineering workflow today?`,
+      content: `👋 **Welcome to the OptiGreen Gemini Intelligence Copilot!**\n\nI am powered by **Google Gemini 2.5 Flash** to optimize cloud CI/CD pipelines, synthesize peer-reviewed sustainability research, and generate production infrastructure code.\n\nHow can I assist your engineering workflow today?`,
       category: 'advisory'
     }
   ]);
