@@ -403,6 +403,18 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
       };
       globalDb.removeQueueItem(item.id);
       released.push(deployedItem);
+      // Dynamic Energy & Emissions Accounting (Green Software Foundation / GHG Scope 1-3)
+      const runnerHours = 0.25;
+      const runnerKw = 0.25;
+      const pue = 1.15;
+      const energyKwh = runnerHours * runnerKw * pue;
+      const marginalFossilIntensity = 480;
+      const baselineEmissionsG = energyKwh * marginalFossilIntensity;
+      const actualEmissionsG = energyKwh * item.carbonIntensity;
+      const dynamicSavedG = Math.max(0, baselineEmissionsG - actualEmissionsG);
+      const dynamicSavedKg = result.decision === 'SLA_AUTO_ESCALATED' ? 0 : Number((dynamicSavedG / 1000).toFixed(3));
+      const dynamicCostUsd = Number((runnerHours * 60 * 0.012).toFixed(2));
+
       globalDb.addActivity({
         id: `act-${now}`,
         repo: item.repo,
@@ -410,12 +422,14 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
         commitSha: `sha-${item.commitSha.substring(0, 5)}`,
         gridScore: Math.max(0, Math.min(100, Math.round((1 - item.carbonIntensity / 700) * 100))),
         decision: result.decision as any,
-        carbonImpact: result.decision === 'SLA_AUTO_ESCALATED' ? '+2.1kg CO2 (SLA escalation)' : '-4.8kg CO2',
+        carbonImpact: result.decision === 'SLA_AUTO_ESCALATED' 
+          ? '+2.1kg CO2 (SLA escalation)' 
+          : `-${(dynamicSavedKg * 1000).toFixed(0)}g CO2 (saved)`,
         status: 'Completed',
         timestamp: 'Just now',
         awsRegion: item.awsRegion,
         carbonValue: item.carbonIntensity,
-        savedKg: result.decision === 'SLA_AUTO_ESCALATED' ? 0 : 4.8
+        savedKg: dynamicSavedKg
       });
 
       await globalAuditLedger.appendBlock({
@@ -423,8 +437,8 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
         repo: item.repo,
         decision: result.decision,
         carbonIntensity: item.carbonIntensity,
-        carbonSavedKg: result.decision === 'SLA_AUTO_ESCALATED' ? 0 : 4.8,
-        costUsd: Number((0.8 + item.carbonIntensity / 500).toFixed(2)),
+        carbonSavedKg: dynamicSavedKg,
+        costUsd: dynamicCostUsd,
         csrdScope3Category: CSRD_SCOPE3_CATEGORY
       });
     } else {

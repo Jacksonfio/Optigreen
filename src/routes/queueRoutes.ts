@@ -11,14 +11,15 @@ import {
   updateThreshold,
   triggerEventBridge
 } from '../controllers/queueController';
+import { verifyWebhookSignature, requireAdminAuth } from '../middleware/securityMiddleware';
 
 const router = Router();
 
 router.get('/queue', getQueue);
-router.post('/queue/enqueue', enqueueWorkload);
-router.post('/queue/deploy', deployWorkload);
-router.delete('/queue/:id', cancelWorkload);
-router.post('/settings/threshold', updateThreshold);
-router.post('/eventbridge/trigger', triggerEventBridge);
+router.post('/queue/enqueue', verifyWebhookSignature, enqueueWorkload);
+router.post('/queue/deploy', requireAdminAuth, deployWorkload);
+router.delete('/queue/:id', requireAdminAuth, cancelWorkload);
+router.post('/settings/threshold', requireAdminAuth, updateThreshold);
+router.post('/eventbridge/trigger', requireAdminAuth, triggerEventBridge);
 
 export default router;
