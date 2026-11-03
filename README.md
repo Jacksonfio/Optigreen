@@ -143,7 +143,7 @@ OptiGreen is fully deployed and operational on **Google Cloud Platform (GCP)**:
 ## 🌍 Potential Impact & Real-World Feasibility
 
 ### 1. The Scale of the Problem
-* Global data center electricity consumption exceeded **460 TWh** in 2024 and is projected to surpass **1,000 TWh by 2026** (comparable to the electricity consumption of Japan), driven by cloud CI/CD pipelines, container compilation, and continuous AI model fine-tuning.
+* According to the **International Energy Agency (IEA) Electricity 2024 Report**, global data center electricity consumption was estimated at **~460 TWh in 2022** and is projected to reach **650 to 1,050 TWh by 2026** (comparable to the electricity consumption of Germany or Japan), accelerated by cloud CI/CD pipelines, container compilation, and continuous AI model fine-tuning.
 * Under the European Union **Corporate Sustainability Reporting Directive (CSRD)** and global ESG mandates, enterprise software companies must audit and report **Scope 3 Category 1 (Purchased Cloud Services & Compute)** emissions. Non-compliance carries severe regulatory financial penalties and investor divestment risks.
 
 ### 2. Worked Engineering Derivation: How Teams Cut Emissions
@@ -166,13 +166,17 @@ All models apply a standardized hyperscaler **PUE of 1.15** across all enterpris
 * **Net Reduction per Batch Build:** $\mathbf{93.9\%}$ emissions avoided for that build.
 
 #### Empirical 1,000-Job Enterprise Portfolio Benchmark:
-Rather than asserting theoretical savings, OptiGreen's decision engine was empirically evaluated across a realistic mix of **1,000 simulated enterprise workloads** with real-world SLA distributions ([`test/empiricalSimulation.test.ts`](test/empiricalSimulation.test.ts)):
-* **Workload Mix:** 107 P1 Hotfixes (10.7%), 563 P2 Features (56.3%), 330 P3 Batch/Nightly builds (33.0%).
-* **Operational Decisions:** 107 emergency overrides (0ms latency penalty), 277 clean-grid direct dispatches, 426 multi-region reroutes, and 190 temporal defers.
+Rather than asserting theoretical savings, OptiGreen's decision engine was empirically evaluated across a realistic mix of **1,000 simulated enterprise workloads** combining SLA tiers and real-world Pareto WAN data egress checks ([`test/empiricalSimulation.test.ts`](test/empiricalSimulation.test.ts)):
+* **Workload Mix:** 107 P1 Hotfixes (10.7%), 594 P2 Features (59.4%), 299 P3 Batch builds (29.9%).
+* **Operational Decisions:**
+  * **107 Emergency Overrides (10.7%):** P1 hotfixes dispatched immediately with zero hold latency.
+  * **274 Clean-Grid Dispatches (27.4%):** Workloads whose origin region was already below threshold.
+  * **496 Dynamically Rerouted Jobs (49.6%):** Microservice builds whose application delta layers passed the Pareto WAN egress check.
+  * **123 Pareto Egress Vetoes & Holds (12.3%):** Heavy container builds where WAN egress cost would exceed carbon savings, held for local green surplus windows.
 * **Measured Portfolio Results:**
-  * **Unoptimized Baseline:** $373.43\text{ kg CO}_2\text{e}$
-  * **OptiGreen Orchestrated:** $123.71\text{ kg CO}_2\text{e}$
-  * **Net Carbon Abated:** $\mathbf{249.72\text{ kg CO}_2\text{e}}$ (**66.9% measured portfolio carbon reduction**).
+  * **Unoptimized Baseline:** $345.84\text{ kg CO}_2\text{e}$
+  * **OptiGreen Orchestrated:** $154.18\text{ kg CO}_2\text{e}$
+  * **Net Carbon Abated:** $\mathbf{191.66\text{ kg CO}_2\text{e}}$ (**55.4% measured portfolio carbon reduction**).
 
 ### 3. Broad Market Usability & Zero Adoption Friction
 * **Universal Compatibility:** OptiGreen acts as an HTTP pre-deployment gate. It integrates with **GitHub Actions, GitLab CI, CircleCI, Bitbucket, and Jenkins** using a single 10-line YAML step (`curl POST /api/queue/enqueue`). Developers don't change their Dockerfiles or build scripts.
@@ -597,7 +601,7 @@ npm test
 * **`test/awsSqsClient.test.ts` (5 tests)**: Tests dual-mode runtime detection (`LIVE` vs `SANDBOX`), simulated message generation, and AWS SDK v3 SQS dispatch behavior.
 * **`test/googleCloudClient.test.ts` (4 tests)**: Verifies Google Cloud Pub/Sub pipeline fanout, Cloud Run metadata detection, and Artifact Registry container deployment.
 * **`test/persistentDatabase.test.ts` (4 tests)**: Verifies atomic serialization, ACID safety, and Cloud Run single-writer persistence behavior across simulated reboots.
-* **`test/empiricalSimulation.test.ts` (1 test)**: Empirically simulates 1,000 real-world enterprise workloads across mixed SLA tiers and dual energy profiles, measuring an exact **66.9% net carbon reduction**.
+* **`test/empiricalSimulation.test.ts` (1 test)**: Empirically simulates 1,000 real-world enterprise workloads across mixed SLA tiers and dual energy profiles with Pareto WAN egress checks, measuring an exact **55.4% net carbon reduction**.
 
 ---
 
