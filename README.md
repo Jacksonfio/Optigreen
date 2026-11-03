@@ -2,7 +2,7 @@
 
 <div align="center">
 
-### **Zero-Emissions Pipeline Middleware, SLA Policy Engine & ESG Compliance Ledger**
+### **Carbon-Aware CI/CD Middleware, SLA Policy Engine & ESG Compliance Ledger**
 
 *Dynamically intercept, optimize, and route cloud compute workloads to the greenest global AWS regions based on real-time electricity grid carbon intensity ($gCO_2eq/kWh$) powered by Google Gemini 2.5 Flash.*
 
@@ -15,7 +15,7 @@
 [![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.5_Flash_%7C_Autonomous_Tools-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![Vitest](https://img.shields.io/badge/Vitest-3.2%20(77%2F77%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![OptiGreen Paper](https://img.shields.io/badge/Semantic_Contract-T01--T20%20(20%2F20%20Passed)-059669?style=for-the-badge)](src/contracts/optigreenContract.ts)
-[![Durable Persistence](https://img.shields.io/badge/Storage-ACID%20Durable%20Disk-10B981?style=for-the-badge&logo=sqlite&logoColor=white)](src/services/persistentDatabase.ts)
+[![Durable Persistence](https://img.shields.io/badge/Storage-Local%20ACID%20Disk-10B981?style=for-the-badge&logo=sqlite&logoColor=white)](src/services/persistentDatabase.ts)
 [![Watch Video Demo](https://img.shields.io/badge/YouTube-Watch%20Video%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=XvRZJKy7myo&t=12s)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
@@ -180,7 +180,7 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
 
 ### 3. Broad Market Usability & Zero Adoption Friction
 * **Universal Compatibility:** OptiGreen acts as an HTTP pre-deployment gate. It integrates with **GitHub Actions, GitLab CI, CircleCI, Bitbucket, and Jenkins** using a single 10-line YAML step (`curl POST /api/queue/enqueue`). Developers don't change their Dockerfiles or build scripts.
-* **Zero Velocity Loss (Developer Velocity Guaranteed):**
+* **Developer Velocity Preservation:**
   * `P1_HOTFIX`: Bypasses holds instantly (0ms delay) with audit logging.
   * `P2_FEATURE`: Capped at a strict 60-minute maximum deferral before auto-releasing via EventBridge.
   * `P3_BATCH`: Queued for clean renewable windows (solar/wind surplus).
@@ -208,7 +208,7 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
 2. **Real-Time Telemetry & SLA Evaluation**: The engine queries regional grid intensity ($gCO_2eq/kWh$) against organization carbon thresholds ($250 gCO_2/kWh$) and the commit's SLA tier (`P1_HOTFIX`, `P2_FEATURE`, `P3_BATCH`).
 3. **Gemini 2.5 Flash Multi-Constraint Reasoning**: When grid emissions are high, Gemini 2.5 Flash evaluates alternative regions, network egress penalties, and optimal solar/wind time windows.
 4. **Action Dispatch**: Workload either dispatches immediately to green compute (`PROCEED`), routes to a cleaner region (`REROUTE`), or queues in AWS SQS (`HELD`).
-5. **CSRD Audit Signature**: A cryptographically signed SHA-256 block links the decision into the immutable audit ledger.
+5. **CSRD Audit Signature**: A cryptographically signed SHA-256 block links the decision into the tamper-evident audit ledger.
 
 ### 2. Interactive Features in the Dashboard
 * **HD Esri Satellite Map & Live Grid Layer**: Interactive Leaflet globe rendering real-time carbon intensity badges and renewable energy shares across all 17 AWS regions.
@@ -221,7 +221,7 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
 
 ## 💡 Innovation & Wow Factor
 
-### Why OptiGreen is Radically Different from Existing Tools
+### Feature Comparison with Existing Tooling
 
 | Capability | Standard CI/CD (GitHub/GitLab) | Static Carbon Tools (Kepler / CCF) | OptiGreen (This Project) |
 | :--- | :--- | :--- | :--- |
@@ -318,13 +318,13 @@ sequenceDiagram
 
 ### 🌟 The 3 Grounded Modes of Gemini Copilot
 
-#### 1. Understand Language Like a Human: DevOps Sustainability Advisor (`mode: "advisor"`)
+#### 1. DevOps Sustainability Advisor (`mode: "advisor"`)
 * Evaluates trade-offs between delivery deadlines and grid emissions, querying live queue depths and regional grid intensities through active tool calls.
 
-#### 2. Analyze Info Like a Supercomputer: Research Paper Synthesizer (`mode: "paper"`)
+#### 2. Research Paper & Contract Synthesizer (`mode: "paper"`)
 * Ingests and synthesizes the formal specification: *OptiGreen: A Proposed Interoperable Semantic Contract for Carbon-, Cost-, and Latency-Aware CI/CD Optimization*. Explains the 9 formal records, first-class `NO_FEASIBLE_SOLUTION` failure attribution, and 3 conformance levels (L1–L3).
 
-#### 3. Generate Creative Content: Production CI/CD Pipelines & Terraform IaC (`mode: "code"`)
+#### 3. Infrastructure as Code & Pipeline Generator (`mode: "code"`)
 * Generates production-ready `.github/workflows/carbon-aware-pipeline.yml` workflows that query the OptiGreen API gate, and Terraform HCL for multi-cloud container registry replication.
 
 ---
@@ -766,11 +766,13 @@ optigreen-scheduler/
 │   ├── conformanceSuite.test.ts       # T01-T20 OptiGreen paper conformance tests (20 passed)
 │   ├── apiEndpoints.test.ts           # REST API & solver integration tests (12 passed)
 │   ├── carbonDecisionEngine.test.ts   # SLA policy & Pareto arbitrage tests (11 passed)
+│   ├── geminiCriticalPath.test.ts     # Gemini critical-path tool calling tests (8 passed)
 │   ├── deploymentInterceptor.test.ts  # Circuit breaker & backoff tests (7 passed)
 │   ├── auditLedger.test.ts            # SHA-256 chaining & tamper tests (5 passed)
 │   ├── awsSqsClient.test.ts           # Dual-mode SQS client tests (5 passed)
 │   ├── googleCloudClient.test.ts      # Cloud Run & Pub/Sub event tests (4 passed)
-│   └── persistentDatabase.test.ts     # ACID disk durability tests (4 passed)
+│   ├── persistentDatabase.test.ts     # ACID disk durability tests (4 passed)
+│   └── empiricalSimulation.test.ts    # 1,000-workload Pareto simulation test (1 passed)
 ├── .env.example                       # Environment template with dual-mode docs
 ├── package.json                       # Dependencies & scripts
 ├── server.ts                          # Express backend & Gemini 2.5 Flash router
