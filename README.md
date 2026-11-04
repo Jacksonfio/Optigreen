@@ -48,6 +48,7 @@
 - [🗂️ Project Directory Structure](#️-project-directory-structure)
 - [🚦 Getting Started](#-getting-started)
 - [🛡️ ESG & CSRD Audit Compliance](#️-esg--csrd-audit-compliance)
+- [⚖️ System Assumptions & Engineering Limitations](#️-system-assumptions--engineering-limitations)
 - [📄 License](#-license)
 
 ---
@@ -66,7 +67,7 @@ Traditional CI/CD tools (GitHub Actions, GitLab CI, Jenkins) execute workloads b
 
 ---
 
-## 📜 Formal Semantic Contract Specification
+## 📜 Research Paper & Formal Semantic Contract
 
 OptiGreen is built upon the formal specification:
 
@@ -113,7 +114,7 @@ Standardized Error Codes:
 * `E_POLICY`: Action violating enterprise governance (e.g. data egress bandwidth cost exceeding carbon arbitrage value).
 * `E_REF`: Broken foreign reference between lifecycle records.
 
-All 20 conformance tests (**T01 through T20**) pass with 100% agreement in [`test/conformanceSuite.test.ts`](test/conformanceSuite.test.ts).
+All 20 conformance tests (**T01 through T20**) pass in [`test/conformanceSuite.test.ts`](test/conformanceSuite.test.ts).
 
 ---
 
@@ -178,7 +179,7 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
   * **OptiGreen Orchestrated:** $154.18\text{ kg CO}_2\text{e}$
   * **Net Carbon Abated:** $\mathbf{191.66\text{ kg CO}_2\text{e}}$ (**55.4% measured portfolio carbon reduction**).
 
-### 3. Broad Market Usability & Zero Adoption Friction
+### 3. Broad Market Usability & Low Adoption Friction
 * **Universal Compatibility:** OptiGreen acts as an HTTP pre-deployment gate. It integrates with **GitHub Actions, GitLab CI, CircleCI, Bitbucket, and Jenkins** using a single 10-line YAML step (`curl POST /api/queue/enqueue`). Developers don't change their Dockerfiles or build scripts.
 * **Developer Velocity Preservation:**
   * `P1_HOTFIX`: Bypasses holds instantly (0ms delay) with audit logging.
@@ -188,7 +189,7 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
 ### 4. Overcoming Cloud Roadblocks (VPC, Docker Caching & Egress Costs)
 * **ECR Cross-Region Replication (CRR):** Base Docker images replicate asynchronously in the background. Runners pull base layers locally with zero WAN latency.
 * **Regional Runner Scale Sets:** Dedicated self-hosted runner pools exist inside regional private VPCs; jobs are dispatched via SQS to the local runner with no cross-VPC security breaches.
-* **Pareto Egress vs. Carbon Arbitrage Equation:** If cross-region data transfer egress cost ($\$0.02/\text{GB}$) exceeds the ESG carbon offset price ($\$50/\text{ton}$), the Pareto solver **automatically vetoes** cross-region transfer and switches to **local time-deferral**, ensuring organizations never lose money while saving the planet.
+* **Pareto Egress vs. Carbon Arbitrage Equation:** If cross-region data transfer egress cost ($\$0.02/\text{GB}$) exceeds the ESG carbon offset price ($\$50/\text{ton}$), the Pareto solver **automatically vetoes** cross-region transfer and switches to **local time-deferral**, ensuring cross-region migration produces a positive net economic and carbon return.
 
 ---
 
@@ -213,7 +214,7 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
 ### 2. Interactive Features in the Dashboard
 * **HD Esri Satellite Map & Live Grid Layer**: Interactive Leaflet globe rendering real-time carbon intensity badges and renewable energy shares across all 17 AWS regions.
 * **Pareto Multi-Objective Frontier**: Visualizes the mathematical trade-off curve between Carbon ($gCO_2$), Cost ($\$$), and Latency ($ms$).
-* **AI Advisor Modal**: Powered by Google Gemini 2.5 Flash (`gemini-2.5-flash` / `gemini-2.5-pro`) providing actionable DevOps workload shifting strategies with guaranteed JSON schema compliance.
+* **AI Advisor Modal**: Powered by Google Gemini 2.5 Flash (`gemini-2.5-flash` / `gemini-2.5-pro`) providing actionable DevOps workload shifting strategies with enforced JSON schema validation.
 * **Fault Simulator & Circuit Breaker**: Live injection of SQS connection timeouts and rate limits to verify exponential backoff and circuit breaker state transitions (`CLOSED` -> `OPEN` -> `HALF_OPEN`).
 * **CSRD / ESG Compliance Portal**: Real-time inspection and verification of the SHA-256 block ledger with downloadable JSON audit certificates.
 
@@ -234,7 +235,7 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
 ### Key Innovations:
 1. **Speculative Pre-Build & Hold**: Rather than waiting for a merge, OptiGreen pre-builds static dependency layers during transient solar/wind spikes. When the PR is approved, the warmed digest deploys in under 500ms.
 2. **Pareto Trade-Off Curve**: Solves the real-world tension between carbon reduction and business cost, ensuring workloads are never rerouted if cross-region egress latency or cost exceeds the environmental benefit.
-3. **SLA-Tiered Auto-Escalation**: Guarantees developer velocity: hotfixes (`P1_HOTFIX`) instantly bypass carbon restrictions, while features (`P2_FEATURE`) are capped at a 60-minute hold budget before auto-releasing.
+3. **SLA-Tiered Auto-Escalation**: Preserves developer velocity: hotfixes (`P1_HOTFIX`) instantly bypass carbon restrictions, while features (`P2_FEATURE`) are capped at a 60-minute hold budget before auto-releasing.
 
 ---
 
@@ -331,7 +332,7 @@ sequenceDiagram
 
 ### 1. Server-Side Security Architecture (Zero Client-Side Leakage)
 A critical security anti-pattern in production AI systems is invoking AI SDKs from the browser, which leaks secret API keys in client-side bundles.
-* **100% Backend Isolation:** In OptiGreen, `@google/genai` is strictly isolated within the Node.js Express server ([`server.ts`](server.ts)).
+* **Strict Backend Isolation:** In OptiGreen, `@google/genai` is strictly isolated within the Node.js Express server ([`server.ts`](server.ts)).
 * `process.env.GEMINI_API_KEY` is loaded exclusively into server memory and never delivered to the client bundle.
 * The frontend React application interacts with Gemini through `/api/ai-optimize` and `/api/gemini/copilot`.
 
@@ -730,6 +731,26 @@ GET /api/ledger
 ```
 Returns the complete tamper-evident SHA-256 cryptographic hash chain and a live Boolean `verified: true` certificate.
 
+### 8. Historical Real-World Grid Replay
+```http
+GET /api/carbon/historical-replay?dataset=nordic_wind_peak
+```
+Replays verified 24-hour historical electricity grid time series from real grid events:
+* `nordic_wind_peak`: Swedish hydro/wind surge (22–38 gCO₂eq/kWh)
+* `frankfurt_coal_crunch`: German winter coal dependency (380–520 gCO₂eq/kWh)
+* `texas_solar_duck_curve`: ERCOT mid-day solar plunge (160–490 gCO₂eq/kWh)
+
+### 9. Developer 1-Click Self-Serve Queue Override
+```http
+POST /api/queue/:id/override
+Content-Type: application/json
+
+{
+  "reason": "Emergency production hotfix needed by on-call engineer"
+}
+```
+Allows engineers to bypass a carbon hold directly from GitHub PR / Slack bot comments, auto-dispatching the workload immediately with an explicit ESG audit ledger record.
+
 ---
 
 ## 🗂️ Project Directory Structure
@@ -757,7 +778,10 @@ optigreen-scheduler/
 │   ├── contracts/
 │   │   └── optigreenContract.ts       # 9 semantic records, NO_FEASIBLE_SOLUTION, L1-L3 & error taxonomy
 │   ├── services/
-│   │   ├── carbonDecisionEngine.ts    # SLA-tiered decision engine & Pareto egress arbitrage
+│   │   ├── carbonDecisionEngine.ts    # SLA decision engine, Data Affinity matrix & Pareto egress solver
+│   │   ├── historicalGridService.ts   # 24-hour verified historical grid telemetry replay service
+│   │   ├── prMergeClassifier.ts       # PR merge probability classifier (>= 85% speculative pre-build gate)
+│   │   ├── notificationBotService.ts  # GitHub PR Markdown & Slack Block Kit notification formatter
 │   │   ├── auditLedger.ts             # Cryptographic SHA-256 ESG ledger (tested)
 │   │   ├── awsSqsClient.ts            # Dual-mode AWS SDK v3 SQS client (tested)
 │   │   ├── deploymentInterceptor.ts   # Exponential backoff & circuit breaker (tested)
@@ -780,6 +804,7 @@ optigreen-scheduler/
 │       └── SpeculativeCacheView.tsx   # Speculative pre-build cache
 ├── test/
 │   ├── conformanceSuite.test.ts       # T01-T20 OptiGreen paper conformance tests (20 passed)
+│   ├── enterpriseDrawbacks.test.ts    # 5 enterprise cloud dilemma tests (10 passed)
 │   ├── apiEndpoints.test.ts           # REST API & solver integration tests (12 passed)
 │   ├── carbonDecisionEngine.test.ts   # SLA policy & Pareto arbitrage tests (11 passed)
 │   ├── geminiCriticalPath.test.ts     # Gemini critical-path tool calling tests (8 passed)
