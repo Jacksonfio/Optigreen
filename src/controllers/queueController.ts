@@ -13,6 +13,7 @@ import { sendToSqs } from '../services/awsSqsClient';
 import { decideDeployment, SlaTier } from '../services/carbonDecisionEngine';
 import { getServerSideRegionIntensity } from '../services/regionalCarbonService';
 import { proposeCandidateRerouting, generateAiSustainabilityAdvisory, GeminiRerouteProposal } from '../services/geminiService';
+import { generateGitHubPrMarkdownComment, generateSlackBlockKitMessage } from '../services/notificationBotService';
 
 export async function getQueue(req: Request, res: Response): Promise<void> {
   const queue = globalDb.getQueue();
@@ -241,6 +242,29 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
     }
   }
 
+  let notificationPayload = null;
+  if (!isBelow) {
+    const overrideUrl = `https://optigreen-368696905831.asia-south1.run.app/api/queue/${workloadId}/override`;
+    const notificationContext = {
+      workloadId,
+      repo: workloadRepo,
+      branch: branch || 'main',
+      commitSha: commitSha || Math.random().toString(36).substring(2, 9),
+      author: commitAuthor || 'Developer',
+      originRegion: targetRegion,
+      currentIntensity: intensity,
+      threshold,
+      holdEstimatedMinutes: tier === 'P2_FEATURE' ? 35 : 90,
+      carbonAvoidedKg: Number(((intensity - threshold) * 0.05).toFixed(2)),
+      overrideUrl
+    };
+
+    notificationPayload = {
+      gitHubPrComment: generateGitHubPrMarkdownComment(notificationContext),
+      slackBlockKit: generateSlackBlockKitMessage(notificationContext)
+    };
+  }
+
   res.json({
     success: true,
     item: interceptResult.result.item,
@@ -248,6 +272,7 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
     sqs: interceptResult.result.sqsSend,
     geminiRerouteProposal,
     aiOptimization,
+    developerNotification: notificationPayload,
     interceptResult,
     interceptorLogs: globalDeploymentInterceptor.getLogs()
   });
@@ -455,5 +480,52 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
     releasedCount: released.length,
     remainingQueued: globalDb.getQueue().length,
     releasedItems: released
+  });
+}
+
+export function overrideHeldWorkload(req: Request, res: Response): void {
+  const { id } = req.params;
+  const queue = globalDb.getQueue();
+  const item = queue.find(q => q.id === id);
+
+  if (!item) {
+    res.status(404).json({ error: 'Held workload not found in active queue' });
+    return;
+  }
+
+  globalDb.removeQueueItem(id);
+  const now = Date.now();
+
+  const activity = globalDb.addActivity({
+    id: `act-override-${now}`,
+    repo: item.repo,
+    branch: item.branch,
+    commitSha: `sha-${item.commitSha.substring(0, 5)}`,
+    gridScore: Math.max(0, Math.min(100, Math.round((1 - item.carbonIntensity / 700) * 100))),
+    decision: 'OVERRIDE' as any,
+    carbonImpact: '+1.8kg CO2 (1-Click Developer Override)',
+    status: 'Completed',
+    timestamp: 'Just now',
+    awsRegion: item.awsRegion,
+    carbonValue: item.carbonIntensity,
+    savedKg: 0
+  });
+
+  globalAuditLedger.appendBlock({
+    deploymentId: item.id,
+    repo: item.repo,
+    decision: 'OVERRIDE',
+    carbonIntensity: item.carbonIntensity,
+    carbonSavedKg: 0,
+    costUsd: 0.18,
+    csrdScope3Category: CSRD_SCOPE3_CATEGORY
+  });
+
+  res.json({
+    success: true,
+    message: `1-Click Developer Override executed: Workload ${id} dispatched immediately to runner pool.`,
+    workloadId: id,
+    action: 'FORCE_DISPATCHED',
+    auditLedgerCommitted: true
   });
 }

@@ -9,7 +9,8 @@ import {
   deployWorkload,
   cancelWorkload,
   updateThreshold,
-  triggerEventBridge
+  triggerEventBridge,
+  overrideHeldWorkload
 } from '../controllers/queueController';
 import { verifyWebhookSignature, requireAdminAuth } from '../middleware/securityMiddleware';
 
@@ -21,5 +22,6 @@ router.post('/queue/deploy', requireAdminAuth, deployWorkload);
 router.delete('/queue/:id', requireAdminAuth, cancelWorkload);
 router.post('/settings/threshold', requireAdminAuth, updateThreshold);
 router.post('/eventbridge/trigger', requireAdminAuth, triggerEventBridge);
+router.post('/queue/:id/override', overrideHeldWorkload);
 
 export default router;

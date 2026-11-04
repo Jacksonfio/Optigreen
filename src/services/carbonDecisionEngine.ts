@@ -2,7 +2,22 @@
 // Pure, deterministic logic — unit tested in test/carbonDecisionEngine.test.ts.
 
 export type SlaTier = 'P1_HOTFIX' | 'P2_FEATURE' | 'P3_BATCH';
-export type Decision = 'PROCEED' | 'QUEUE' | 'OVERRIDE' | 'SLA_AUTO_ESCALATED';
+export type Decision = 'PROCEED' | 'QUEUE' | 'OVERRIDE' | 'SLA_AUTO_ESCALATED' | 'REROUTED';
+export type DataAffinity = 'strict_local' | 'regional_paired' | 'global_roaming';
+
+// Real-world WAN Latency Matrix between major cloud compute regions (RTT milliseconds)
+export const WAN_LATENCY_MATRIX_MS: Record<string, Record<string, number>> = {
+  'us-east-1': { 'us-east-1': 5, 'us-west-2': 68, 'eu-north-1': 118, 'eu-central-1': 95, 'ap-south-1': 185 },
+  'us-west-2': { 'us-east-1': 68, 'us-west-2': 5, 'eu-north-1': 142, 'eu-central-1': 130, 'ap-south-1': 210 },
+  'eu-central-1': { 'us-east-1': 95, 'us-west-2': 130, 'eu-north-1': 32, 'eu-central-1': 5, 'ap-south-1': 115 },
+  'eu-north-1': { 'us-east-1': 118, 'us-west-2': 142, 'eu-north-1': 5, 'eu-central-1': 32, 'ap-south-1': 135 },
+  'ap-south-1': { 'us-east-1': 185, 'us-west-2': 210, 'eu-north-1': 135, 'eu-central-1': 115, 'ap-south-1': 5 }
+};
+
+export function getWanLatencyMs(origin: string, target: string): number {
+  if (origin === target) return 5;
+  return WAN_LATENCY_MATRIX_MS[origin]?.[target] ?? WAN_LATENCY_MATRIX_MS[target]?.[origin] ?? 125;
+}
 
 export interface DecisionInput {
   carbonIntensity: number; // gCO2eq/kWh
@@ -108,6 +123,8 @@ export interface CrossRegionMigrationInput {
   targetRegion: string;
   targetIntensity: number; // gCO2eq/kWh
   artifactSizeGb: number;
+  dataAffinity?: DataAffinity; // "strict_local" vetoes cross-region WAN movement completely
+  maxAllowedLatencyMs?: number; // SLA ceiling for WAN latency
   computeHours?: number; // default 1.5 hr
   serverPowerKw?: number; // default 2.5 kW
   egressCostPerGb?: number; // default AWS standard $0.02 / GB
@@ -121,6 +138,8 @@ export interface CrossRegionMigrationResult {
   egressCostUsd: number;
   carbonValueUsd: number;
   netBenefitUsd: number;
+  wanLatencyMs: number;
+  dataAffinityCompliant: boolean;
 }
 
 export function evaluateCrossRegionMigration(input: CrossRegionMigrationInput): CrossRegionMigrationResult {
@@ -130,11 +149,43 @@ export function evaluateCrossRegionMigration(input: CrossRegionMigrationInput): 
     targetRegion,
     targetIntensity,
     artifactSizeGb,
+    dataAffinity = 'global_roaming',
+    maxAllowedLatencyMs = 250,
     computeHours = 1.5,
     serverPowerKw = 2.5,
     egressCostPerGb = 0.02,
     carbonPricePerTonUsd = 50
   } = input;
+
+  const wanLatencyMs = getWanLatencyMs(originRegion, targetRegion);
+
+  // Enforce Data Affinity constraints (GDPR, HIPAA, and private VPC residency boundaries)
+  if (dataAffinity === 'strict_local' && originRegion !== targetRegion) {
+    return {
+      allowed: false,
+      reason: `Data residency constraint: Workload is tagged 'strict_local'. Cross-region transfer to ${targetRegion} is blocked. Defer locally instead.`,
+      netCarbonSavedKg: 0,
+      egressCostUsd: 0,
+      carbonValueUsd: 0,
+      netBenefitUsd: 0,
+      wanLatencyMs,
+      dataAffinityCompliant: false
+    };
+  }
+
+  // Enforce WAN Network Latency constraints (e.g. interactive builds with max 150ms round-trip)
+  if (wanLatencyMs > maxAllowedLatencyMs) {
+    return {
+      allowed: false,
+      reason: `Network latency constraint: WAN round-trip latency (${wanLatencyMs}ms) to ${targetRegion} exceeds maximum allowed budget (${maxAllowedLatencyMs}ms). Migration vetoed.`,
+      netCarbonSavedKg: 0,
+      egressCostUsd: 0,
+      carbonValueUsd: 0,
+      netBenefitUsd: 0,
+      wanLatencyMs,
+      dataAffinityCompliant: true
+    };
+  }
 
   const pue = 1.15;
   const energyKwh = computeHours * serverPowerKw * pue;
@@ -159,7 +210,9 @@ export function evaluateCrossRegionMigration(input: CrossRegionMigrationInput): 
       netCarbonSavedKg: 0,
       egressCostUsd,
       carbonValueUsd: 0,
-      netBenefitUsd: -egressCostUsd
+      netBenefitUsd: -egressCostUsd,
+      wanLatencyMs,
+      dataAffinityCompliant: true
     };
   }
 
@@ -170,16 +223,20 @@ export function evaluateCrossRegionMigration(input: CrossRegionMigrationInput): 
       netCarbonSavedKg,
       egressCostUsd,
       carbonValueUsd,
-      netBenefitUsd
+      netBenefitUsd,
+      wanLatencyMs,
+      dataAffinityCompliant: true
     };
   }
 
   return {
     allowed: true,
-    reason: `Economically and environmentally positive: saves ${netCarbonSavedKg}kg CO2 (value $${carbonValueUsd}) at $${egressCostUsd} egress cost.`,
+    reason: `Economically and environmentally positive: saves ${netCarbonSavedKg}kg CO2 (value $${carbonValueUsd}) at $${egressCostUsd} egress cost with ${wanLatencyMs}ms WAN latency.`,
     netCarbonSavedKg,
     egressCostUsd,
     carbonValueUsd,
-    netBenefitUsd
+    netBenefitUsd,
+    wanLatencyMs,
+    dataAffinityCompliant: true
   };
 }

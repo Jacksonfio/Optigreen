@@ -513,7 +513,11 @@ Provide a concise, JSON-formatted sustainability advisory with:
 
 Return ONLY valid JSON.`;
 
-    const response = await ai.models.generateContent({
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Gemini API advisory timed out')), 8000)
+    );
+
+    const generatePromise = ai.models.generateContent({
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       contents: prompt,
       config: {
@@ -534,10 +538,12 @@ Return ONLY valid JSON.`;
       }
     });
 
+    const response: any = await Promise.race([generatePromise, timeoutPromise]);
+
     const text = response.text || '{}';
     return JSON.parse(text);
   } catch (err: any) {
-    console.error('Gemini API optimization advisory error:', err);
+    console.error('Gemini API optimization advisory error:', err?.message || err);
     return {
       recommendation: "Optimize regional deployment strategy: 'us-west-2' and 'us-east-1' are currently experiencing 45% higher renewable energy mix.",
       potentialSavingsKg: 14.2,
@@ -575,16 +581,23 @@ You have access to real tools:
 Always invoke the relevant tools to ground your answers in real calculations and telemetry.
 Respond with clear markdown, cite exact numbers from tool execution, and provide actionable DevOps recommendations.`;
 
-      const initialResponse = await ai.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-        contents: [
-          { role: 'user', parts: [{ text: `User Question [Mode: ${mode}]: ${prompt}` }] }
-        ],
-        config: {
-          systemInstruction,
-          tools: GEMINI_TOOL_DECLARATIONS
-        }
-      });
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Gemini Copilot API timed out')), 8000)
+      );
+
+      const initialResponse = await Promise.race([
+        ai.models.generateContent({
+          model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+          contents: [
+            { role: 'user', parts: [{ text: `User Question [Mode: ${mode}]: ${prompt}` }] }
+          ],
+          config: {
+            systemInstruction,
+            tools: GEMINI_TOOL_DECLARATIONS
+          }
+        }),
+        timeoutPromise
+      ]) as any;
 
       const functionCalls = initialResponse.functionCalls;
       if (functionCalls && functionCalls.length > 0) {
@@ -613,18 +626,33 @@ Respond with clear markdown, cite exact numbers from tool execution, and provide
           }
         }
 
-        const synthesizedResponse = await ai.models.generateContent({
-          model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-          contents: followUpContents,
-          config: { systemInstruction }
-        });
+        const synthesizedResponse = await Promise.race([
+          ai.models.generateContent({
+            model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+            contents: followUpContents,
+            config: { systemInstruction }
+          }),
+          timeoutPromise
+        ]) as any;
 
         const reply = synthesizedResponse.text || initialResponse.text || 'Analysis completed.';
-        return { reply, mode, toolsExecuted, modeStatus: 'LIVE' };
+        return {
+          reply,
+          codeSnippet: mode === 'code' ? reply : undefined,
+          mode,
+          toolsExecuted,
+          modeStatus: 'LIVE'
+        };
       }
 
       if (initialResponse.text) {
-        return { reply: initialResponse.text, mode, toolsExecuted, modeStatus: 'LIVE' };
+        return {
+          reply: initialResponse.text,
+          codeSnippet: mode === 'code' ? initialResponse.text : undefined,
+          mode,
+          toolsExecuted,
+          modeStatus: 'LIVE'
+        };
       }
     } catch (err: any) {
       console.warn('Gemini Live API fallback to deterministic sandbox:', err?.message || err);

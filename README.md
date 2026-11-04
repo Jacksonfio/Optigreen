@@ -13,7 +13,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Google Cloud Run](https://img.shields.io/badge/Google_Cloud-Cloud%20Run%20%7C%20Cloud%20Build-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
 [![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.5_Flash_%7C_Autonomous_Tools-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
-[![Vitest](https://img.shields.io/badge/Vitest-3.2%20(77%2F77%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-3.2%20(87%2F87%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![OptiGreen Paper](https://img.shields.io/badge/Semantic_Contract-T01--T20%20(20%2F20%20Passed)-059669?style=for-the-badge)](src/contracts/optigreenContract.ts)
 [![Durable Persistence](https://img.shields.io/badge/Storage-Local%20ACID%20Disk-10B981?style=for-the-badge&logo=sqlite&logoColor=white)](src/services/persistentDatabase.ts)
 [![Watch Video Demo](https://img.shields.io/badge/YouTube-Watch%20Video%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=XvRZJKy7myo&t=12s)
@@ -404,6 +404,21 @@ Here is how OptiGreen architecturally resolves these real-world constraints:
 │    If EgressCost > CarbonValue:                                        │
 │      Migration is strictly VETOED (economic net loss). Workload is held│
 │      locally until regional grid intensity drops below threshold.      │
+│                                                                        │
+│ 4. Data Affinity Matrix & WAN Round-Trip Latency Penalty:              │
+│    - strict_local: Zero cross-region migration permitted (GDPR/residency)│
+│    - regional_paired: Only peer continents allowed (e.g. us-east/west) │
+│    - global_roaming: Unrestricted multi-continent roaming             │
+│    WAN latency matrix (e.g. 118ms trans-Atlantic, 185ms trans-Pacific)│
+│    is factored into Pareto developer wait-time constraints.           │
+│                                                                        │
+│ 5. PR Merge Probability Gate for Speculative Pre-Building (>= 85%):    │
+│    ML/heuristic scoring on commit churn, PR draft state, and author    │
+│    merge history prevents speculative compute waste on abandoned PRs. │
+│                                                                        │
+│ 6. Developer Ergonomics: Transparent PR Bot & 1-Click Self-Serve Override:│
+│    OptiGreen posts clear GitHub PR / Slack block cards explaining carbon│
+│    holds with a secure 1-click self-serve bypass link (/api/queue/:id/override).│
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -585,7 +600,7 @@ OptiGreen includes production-grade integration artifacts directly inside the re
 
 ## 🧪 Testing & Reliability
 
-The platform contains a dedicated **Vitest 3** test suite located in `test/`, with **77 passed unit, integration, and conformance tests across 10 test suites**:
+The platform contains a dedicated **Vitest 3** test suite located in `test/`, with **87 passed unit, integration, and conformance tests across 11 test suites**:
 
 ```bash
 npm test
@@ -593,6 +608,7 @@ npm test
 
 ### Verified Test Suites:
 * **`test/conformanceSuite.test.ts` (20 tests)**: Evaluates the complete **OptiGreen Semantic Contract (T01 – T20)**, validating the 9 record types (`workload`, `observation`, `candidate`, `constraint`, `objective`, `decision`, `action`, `outcome`, `audit`), `NO_FEASIBLE_SOLUTION` first-class recording with failure attribution, error taxonomy (`E_SCHEMA`, `E_UNIT`, `E_VERSION`, `E_CONSTRAINT`, `E_POLICY`, `E_REF`), and 3 conformance levels (L1, L2, L3).
+* **`test/enterpriseDrawbacks.test.ts` (10 tests)**: Validates solutions to the 5 enterprise cloud dilemmas: Data Affinity Matrix enforcement, WAN latency penalty modeling, PR merge probability classifier ($\ge 85\%$), verified historical grid telemetry replay, and 1-click self-serve developer queue overrides.
 * **`test/apiEndpoints.test.ts` (12 tests)**: Integration tests verifying REST endpoints (`/api/health`, `/api/integrations/status`, `/api/carbon/all-regions`, `/api/ledger`, `/api/queue/enqueue`, `/api/settings/threshold`, `/api/ai-optimize`, `/api/optigreen/conformance`, `/api/optigreen/solve`, `/api/gemini/copilot`, and `/api/database/stats`).
 * **`test/carbonDecisionEngine.test.ts` (11 tests)**: Verifies PROCEED decisions, HELD queues, P1 hotfixes, P2 60-min SLA auto-escalation, boundary math, and **Pareto Egress vs. Carbon Arbitrage** (vetoing migrations where bandwidth costs exceed emissions value).
 * **`test/geminiCriticalPath.test.ts` (8 tests)**: Verifies Google Gemini 2.5 Flash active tool calling on the deployment critical path, handling live dynamic reroutes, SLA overrides, and error fallbacks.

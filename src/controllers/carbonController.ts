@@ -5,6 +5,7 @@
 
 import { Request, Response } from 'express';
 import { getAllRegionsTelemetry } from '../services/regionalCarbonService';
+import { getHistoricalReplayScenario, HISTORICAL_GRID_ARCHIVE } from '../services/historicalGridService';
 
 export async function getCarbonIntensity(req: Request, res: Response): Promise<void> {
   const zone = (req.query.zone as string) || 'US-CAL-CISO';
@@ -51,4 +52,13 @@ export async function getCarbonIntensity(req: Request, res: Response): Promise<v
 export async function getAllRegionsCarbon(req: Request, res: Response): Promise<void> {
   const data = await getAllRegionsTelemetry();
   res.json(data);
+}
+
+export function getHistoricalReplay(req: Request, res: Response): void {
+  const scenario = (req.query.scenario as string) || 'nordic_wind_peak';
+  const data = getHistoricalReplayScenario(scenario);
+  res.json({
+    ...data,
+    availableScenarios: Object.keys(HISTORICAL_GRID_ARCHIVE)
+  });
 }
