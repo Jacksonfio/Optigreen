@@ -368,9 +368,9 @@ Always ground your calculations in exact tool telemetry.`;
         }
 
         const candidateRegion = (migrationStep?.input?.targetRegion) || (egressStep?.input?.targetRegion) || 'eu-north-1';
-        const candidateIntensity = telemetryStep?.output?.[candidateRegion]?.intensity || egressStep?.output?.targetIntensity || 25;
-        const egressAllowed = egressStep?.output?.allowed ?? true;
-        const savedKg = egressStep?.output?.netCarbonSavedKg || Number((((context.carbonIntensity - candidateIntensity) * 0.05)).toFixed(2));
+        const candidateIntensity = telemetryStep?.output?.[candidateRegion]?.intensity ?? egressStep?.output?.targetIntensity ?? 25;
+        const egressAllowed = egressStep?.output?.allowed ?? false;
+        const savedKg = egressStep?.output?.netCarbonSavedKg ?? Number((((context.carbonIntensity - candidateIntensity) * 0.05)).toFixed(2));
 
         return {
           proposed: egressAllowed,
@@ -380,9 +380,9 @@ Always ground your calculations in exact tool telemetry.`;
           originIntensity: context.carbonIntensity,
           estimatedSavingsKg: Math.max(0, savedKg),
           egressAllowed,
-          egressCostUsd: egressStep?.output?.egressCostUsd || 0.05,
-          carbonValueUsd: egressStep?.output?.carbonValueUsd || 0.45,
-          netBenefitUsd: egressStep?.output?.netBenefitUsd || 0.40,
+          egressCostUsd: egressStep?.output?.egressCostUsd ?? 0.05,
+          carbonValueUsd: egressStep?.output?.carbonValueUsd ?? 0.45,
+          netBenefitUsd: egressStep?.output?.netBenefitUsd ?? 0.40,
           toolsExecuted,
           reasoning: synthesized.text || `Autonomous candidate reroute to ${candidateRegion} proposed (${candidateIntensity} gCO2/kWh vs ${context.carbonIntensity} gCO2/kWh origin).`,
           modeStatus: 'LIVE'
@@ -773,12 +773,12 @@ jobs:
 
   return {
     reply: `### ⚡ Gemini DevOps Sustainability Advisory (Autonomous Tool Guided)
-* **Active Tool Execution:** Evaluated cross-region migration for \`payments-api\` container from Virginia (\`us-east-1\`, 214 gCO2/kWh) to Stockholm (\`eu-north-1\`, 25 gCO2/kWh).
+* **Active Tool Execution:** Evaluated cross-region migration for \`payments-api\` container from Mumbai (\`ap-south-1\`, 710 gCO2/kWh) to Stockholm (\`eu-north-1\`, 25 gCO2/kWh).
 * **Pareto Egress Decision [Veto Analysis]:**
-  - **40 GB Heavy Container Artifact:** **VETOED**. Egress network transfer cost ($0.80) exceeds carbon abatement economic value ($0.085 at $50/ton). Migration deferred to local green window instead of polluting bandwidth.
-  - **2.5 GB Compressed Runner:** **APPROVED**. Egress cost ($0.05) is significantly lower than carbon abatement value ($0.56). Net Economic Benefit: **+$0.51**.
-* **Queue Action:** Pending P2 feature builds automatically routed to Oregon (\`us-west-2\`) with 94% renewable hydro power.`,
-    metadata: { region: 'us-west-2', savedKg: 18.4 },
+  - **40 GB Heavy Container Artifact:** **VETOED**. Egress network transfer cost ($0.80) exceeds carbon abatement economic value ($0.148 at $50/ton). Migration deferred to local green window instead of polluting bandwidth.
+  - **2.5 GB Compressed Runner:** **APPROVED**. Egress cost ($0.05) is significantly lower than carbon abatement value ($0.148). Net Economic Benefit: **+$0.098**.
+* **Queue Action:** Pending P2 feature builds automatically routed to Stockholm (\`eu-north-1\`) with 99% renewable hydro power.`,
+    metadata: { region: 'eu-north-1', savedKg: 2.95 },
     toolsExecuted,
     modeStatus: 'SANDBOX'
   };

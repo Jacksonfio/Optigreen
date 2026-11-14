@@ -69,4 +69,22 @@ describe('auditLedger', () => {
     expect((await a.verifyChain()).valid).toBe(true);
     expect((await b.verifyChain()).valid).toBe(true);
   });
+
+  it('serializes concurrent appendBlock calls with zero race conditions', async () => {
+    const ledger = new AuditLedger();
+    const concurrentAppends = Array.from({ length: 10 }, (_, i) =>
+      ledger.appendBlock(blockInput({ deploymentId: `sqs-concurrent-${i}` }))
+    );
+
+    const blocks = await Promise.all(concurrentAppends);
+    expect(blocks.length).toBe(10);
+    // Ensure sequential indexing
+    blocks.forEach((b, idx) => {
+      expect(b.blockIndex).toBe(idx + 1);
+    });
+
+    const verify = await ledger.verifyChain();
+    expect(verify.valid).toBe(true);
+    expect(verify.verifiedBlocks).toBe(10);
+  });
 });

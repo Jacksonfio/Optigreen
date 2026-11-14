@@ -797,7 +797,7 @@ optigreen-scheduler/
 │       ├── GeminiCopilotView.tsx      # Gemini 2.5 Flash Copilot with real autonomous tool execution
 │       ├── InterceptorMonitorModal.tsx# Resilience & circuit breaker telemetry
 │       ├── LiveCarbonView.tsx         # Leaflet + Esri satellite interactive map
-│       ├── LoginView.tsx              # Google Sign-In & authentication modal
+│       ├── LoginView.tsx              # 1-Click Judge & Operator Demo Authentication Access
 │       ├── ParetoOptimizerView.tsx    # Pareto trade-off solver UI
 │       ├── PipelineProfilerModal.tsx  # Per-step energy profiler
 │       ├── QueueView.tsx              # Live SQS queue viewer

@@ -411,49 +411,78 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
   const systemThreshold = globalDb.getSettings().threshold;
 
   for (const item of queue) {
+    // 1. Never revert already dispatched, deployed, or emergency override jobs back to HELD
+    if (
+      item.status === 'DEPLOYED' || 
+      item.decision === 'OVERRIDE' || 
+      item.decision === 'PROCEED' || 
+      item.decision === 'REROUTED'
+    ) {
+      continue;
+    }
+
+    // 2. Refetch current live regional grid intensity so cleaner grid windows can release held jobs
+    let currentIntensity = item.carbonIntensity;
+    try {
+      const liveTelemetry = await getServerSideRegionIntensity(item.awsRegion);
+      if (liveTelemetry && typeof liveTelemetry.intensity === 'number') {
+        currentIntensity = liveTelemetry.intensity;
+      }
+    } catch {
+      // Retain existing intensity snapshot if lookup fails
+    }
+
     const result = decideDeployment({
-      carbonIntensity: item.carbonIntensity,
+      carbonIntensity: currentIntensity,
       threshold: systemThreshold,
       slaTier: item.slaTier || 'P2_FEATURE',
       queuedAt: item.createdAt,
       now
     });
 
-    if (result.decision === 'PROCEED' || result.decision === 'SLA_AUTO_ESCALATED') {
+    // 3. Release when intensity falls below threshold, SLA auto-escalates, or hotfix overrides
+    if (result.decision === 'PROCEED' || result.decision === 'SLA_AUTO_ESCALATED' || result.decision === 'OVERRIDE') {
       const deployedItem = {
         ...item,
+        carbonIntensity: currentIntensity,
         status: 'DEPLOYED' as const,
         decision: result.decision,
         estWait: 'Now'
       };
       globalDb.removeQueueItem(item.id);
       released.push(deployedItem);
-      // Dynamic Energy & Emissions Accounting (Green Software Foundation / GHG Scope 1-3)
+
+      // Unified Energy & Emissions Accounting
       const runnerHours = 0.25;
       const runnerKw = 0.25;
       const pue = 1.15;
       const energyKwh = runnerHours * runnerKw * pue;
+      
+      // Calculate carbon saved relative to initial queue hold snapshot or marginal fossil baseline
       const marginalFossilIntensity = 480;
-      const baselineEmissionsG = energyKwh * marginalFossilIntensity;
-      const actualEmissionsG = energyKwh * item.carbonIntensity;
-      const dynamicSavedG = Math.max(0, baselineEmissionsG - actualEmissionsG);
-      const dynamicSavedKg = result.decision === 'SLA_AUTO_ESCALATED' ? 0 : Number((dynamicSavedG / 1000).toFixed(3));
+      const baselineIntensity = Math.max(item.carbonIntensity, marginalFossilIntensity);
+      const dynamicSavedG = Math.max(0, energyKwh * (baselineIntensity - currentIntensity));
+      const dynamicSavedKg = result.decision === 'SLA_AUTO_ESCALATED' || result.decision === 'OVERRIDE'
+        ? 0 
+        : Number((dynamicSavedG / 1000).toFixed(3));
       const dynamicCostUsd = Number((runnerHours * 60 * 0.012).toFixed(2));
 
       globalDb.addActivity({
-        id: `act-${now}`,
+        id: `act-eventbridge-${item.id}-${now}`,
         repo: item.repo,
         branch: item.branch,
         commitSha: `sha-${item.commitSha.substring(0, 5)}`,
-        gridScore: Math.max(0, Math.min(100, Math.round((1 - item.carbonIntensity / 700) * 100))),
+        gridScore: Math.max(0, Math.min(100, Math.round((1 - currentIntensity / 700) * 100))),
         decision: result.decision as any,
         carbonImpact: result.decision === 'SLA_AUTO_ESCALATED' 
           ? '+2.1kg CO2 (SLA escalation)' 
+          : result.decision === 'OVERRIDE'
+          ? '+1.8kg CO2 (Override release)'
           : `-${(dynamicSavedKg * 1000).toFixed(0)}g CO2 (saved)`,
         status: 'Completed',
         timestamp: 'Just now',
         awsRegion: item.awsRegion,
-        carbonValue: item.carbonIntensity,
+        carbonValue: currentIntensity,
         savedKg: dynamicSavedKg
       });
 
@@ -461,13 +490,14 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
         deploymentId: item.id,
         repo: item.repo,
         decision: result.decision,
-        carbonIntensity: item.carbonIntensity,
+        carbonIntensity: currentIntensity,
         carbonSavedKg: dynamicSavedKg,
         costUsd: dynamicCostUsd,
         csrdScope3Category: CSRD_SCOPE3_CATEGORY
       });
     } else {
       globalDb.updateQueueItem(item.id, {
+        carbonIntensity: currentIntensity,
         estWait: result.estWait,
         status: 'HELD',
         decision: 'QUEUE'
@@ -483,7 +513,7 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
   });
 }
 
-export function overrideHeldWorkload(req: Request, res: Response): void {
+export async function overrideHeldWorkload(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
   const queue = globalDb.getQueue();
   const item = queue.find(q => q.id === id);
@@ -497,7 +527,7 @@ export function overrideHeldWorkload(req: Request, res: Response): void {
   const now = Date.now();
 
   const activity = globalDb.addActivity({
-    id: `act-override-${now}`,
+    id: `act-override-${item.id}-${now}`,
     repo: item.repo,
     branch: item.branch,
     commitSha: `sha-${item.commitSha.substring(0, 5)}`,
@@ -511,7 +541,7 @@ export function overrideHeldWorkload(req: Request, res: Response): void {
     savedKg: 0
   });
 
-  globalAuditLedger.appendBlock({
+  await globalAuditLedger.appendBlock({
     deploymentId: item.id,
     repo: item.repo,
     decision: 'OVERRIDE',

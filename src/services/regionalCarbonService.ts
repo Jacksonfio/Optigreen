@@ -15,8 +15,8 @@ export interface AwsRegionMetadata {
 }
 
 export const AWS_REGIONS_CATALOG: AwsRegionMetadata[] = [
-  { awsRegion: 'us-east-1', regionName: 'US East (N. Virginia)', zoneKey: 'US-CAL-CISO', baseIntensity: 214, baseRenewable: 82, lat: 38.9, lng: -77.0 },
-  { awsRegion: 'us-east-2', regionName: 'US East (Ohio)', zoneKey: 'US-MIDW-MISO', baseIntensity: 310, baseRenewable: 62, lat: 40.0, lng: -83.0 },
+  { awsRegion: 'us-east-1', regionName: 'US East (N. Virginia)', zoneKey: 'US-MIDA-PJM', baseIntensity: 214, baseRenewable: 82, lat: 38.9, lng: -77.0 },
+  { awsRegion: 'us-east-2', regionName: 'US East (Ohio)', zoneKey: 'US-MIDA-PJM', baseIntensity: 310, baseRenewable: 62, lat: 40.0, lng: -83.0 },
   { awsRegion: 'us-west-1', regionName: 'US West (N. California)', zoneKey: 'US-CAL-CISO', baseIntensity: 185, baseRenewable: 88, lat: 37.7, lng: -122.4 },
   { awsRegion: 'us-west-2', regionName: 'US West (Oregon)', zoneKey: 'US-NW-PACW', baseIntensity: 110, baseRenewable: 94, lat: 45.5, lng: -122.6 },
   { awsRegion: 'ca-central-1', regionName: 'Canada (Central)', zoneKey: 'CA-QC', baseIntensity: 45, baseRenewable: 98, lat: 45.5, lng: -73.5 },
@@ -71,7 +71,11 @@ export function getCarbonProviderStatus(): CarbonProviderStatus {
 export async function getServerSideRegionIntensity(region: string): Promise<{ intensity: number; isLive: boolean; regionName: string }> {
   const reg = AWS_REGIONS_CATALOG.find(
     r => r.awsRegion.toLowerCase() === region.toLowerCase() || r.zoneKey.toLowerCase() === region.toLowerCase()
-  ) || AWS_REGIONS_CATALOG[0];
+  );
+
+  if (!reg) {
+    throw new Error(`Invalid or unsupported AWS region identifier: "${region}"`);
+  }
 
   const apiKey = process.env.ELECTRICITY_API_KEY || process.env.ELECTRICITY_MAPS_API_KEY;
   if (apiKey && apiKey !== 'YOUR_ELECTRICITY_MAPS_API_KEY' && apiKey !== 'MY_ELECTRICITY_MAPS_API_KEY') {

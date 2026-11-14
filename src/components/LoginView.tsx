@@ -161,11 +161,17 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
               </label>
             </div>
 
+            <div className="p-3 bg-[#00FF41]/10 border border-[#00FF41]/20 rounded-xl my-4 text-center">
+              <span className="font-code text-[11px] text-[#00FF41] font-semibold">
+                🌿 Hackathon Judge Access: Demo credentials pre-filled.
+              </span>
+            </div>
+
             <button
               type="submit"
-              className="w-full bg-[#00FF41] text-black py-3.5 px-4 rounded-xl font-code text-xs font-bold hover:bg-[#00e038] transition-all flex items-center justify-center gap-2 shadow-xs mt-6"
+              className="w-full bg-[#00FF41] text-black py-3.5 px-4 rounded-xl font-code text-xs font-bold hover:bg-[#00e038] transition-all flex items-center justify-center gap-2 shadow-xs mt-2"
             >
-              <span>Sign in to OptiGreen</span>
+              <span>Enter Live Operations Dashboard (1-Click Access)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>

@@ -31,6 +31,7 @@ async function sha256Hex(input: string): Promise<string> {
 
 export class AuditLedger {
   private blocks: LedgerBlock[] = [];
+  private appendQueue: Promise<any> = Promise.resolve();
 
   constructor(seedBlocks: LedgerBlock[] = []) {
     this.blocks = seedBlocks.map((b) => ({ ...b }));
@@ -66,23 +67,30 @@ export class AuditLedger {
   }
 
   async appendBlock(input: Omit<LedgerBlock, 'blockIndex' | 'timestamp' | 'previousHash' | 'currentHash' | 'auditorSignature'>): Promise<LedgerBlock> {
-    const blockIndex = this.blocks.length + 1;
-    const timestamp = new Date().toISOString();
-    const previousHash = this.lastHash;
+    const operation = async (): Promise<LedgerBlock> => {
+      const blockIndex = this.blocks.length + 1;
+      const timestamp = new Date().toISOString();
+      const previousHash = this.lastHash;
 
-    const block: Omit<LedgerBlock, 'currentHash' | 'auditorSignature'> = {
-      blockIndex,
-      timestamp,
-      ...input,
-      previousHash
+      const block: Omit<LedgerBlock, 'currentHash' | 'auditorSignature'> = {
+        blockIndex,
+        timestamp,
+        ...input,
+        previousHash
+      };
+
+      const currentHash = await sha256Hex(AuditLedger.canonicalPayload(block));
+      const auditorSignature = `SHA256_CHAIN_VERIFIED_${currentHash.slice(0, 16).toUpperCase()}`;
+
+      const full: LedgerBlock = { ...block, currentHash, auditorSignature };
+      this.blocks.push(full);
+      return full;
     };
 
-    const currentHash = await sha256Hex(AuditLedger.canonicalPayload(block));
-    const auditorSignature = `SHA256_CHAIN_VERIFIED_${currentHash.slice(0, 16).toUpperCase()}`;
-
-    const full: LedgerBlock = { ...block, currentHash, auditorSignature };
-    this.blocks.push(full);
-    return full;
+    // Serialize concurrent appendBlock invocations into a strict sequential promise queue
+    const nextPromise = this.appendQueue.then(operation);
+    this.appendQueue = nextPromise.catch(() => {});
+    return nextPromise;
   }
 
   // Recompute every block hash and confirm each one commits to its parent.

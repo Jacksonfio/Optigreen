@@ -47,18 +47,14 @@ jobs:
           EOF
           )
           
-          # If OPTIGREEN_ENDPOINT is set in secrets, query live service; else simulate gate
-          if [ -n "${{ secrets.OPTIGREEN_API_URL }}" ]; then
-            RESPONSE=$(curl -s -X POST "${{ secrets.OPTIGREEN_API_URL }}/api/queue/enqueue" \
-              -H "Content-Type: application/json" \
-              -d "$PAYLOAD")
-            DECISION=$(echo "$RESPONSE" | jq -r '.decision.decision // "PROCEED"')
-            REGION=$(echo "$RESPONSE" | jq -r '.item.awsRegion // "us-east-1"')
-          else
-            echo "No live OptiGreen URL configured; defaulting to gate evaluation."
-            DECISION="PROCEED"
-            REGION="us-west-2"
-          fi
+          # If OPTIGREEN_API_URL is set in secrets, query that URL; else query live Cloud Run production instance
+          ENDPOINT="${{ secrets.OPTIGREEN_API_URL || 'https://optigreen-368696905831.asia-south1.run.app' }}"
+          echo "Connecting to OptiGreen gate at: $ENDPOINT"
+          RESPONSE=$(curl -s -X POST "$ENDPOINT/api/queue/enqueue" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+          DECISION=$(echo "$RESPONSE" | jq -r '.decision.decision // "PROCEED"')
+          REGION=$(echo "$RESPONSE" | jq -r '.item.awsRegion // "us-west-2"')
           
           echo "Carbon Decision: $DECISION"
           echo "Target AWS Region: $REGION"
@@ -68,7 +64,7 @@ jobs:
   deploy:
     name: Execute Deploy on Green Compute
     needs: [carbon-gate]
-    if: needs.carbon-gate.outputs.decision == 'PROCEED' || needs.carbon-gate.outputs.decision == 'SLA_AUTO_ESCALATED'
+    if: needs.carbon-gate.outputs.decision == 'PROCEED' || needs.carbon-gate.outputs.decision == 'SLA_AUTO_ESCALATED' || needs.carbon-gate.outputs.decision == 'OVERRIDE' || needs.carbon-gate.outputs.decision == 'REROUTED'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Target AWS Region

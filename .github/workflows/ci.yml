@@ -28,3 +28,6 @@ jobs:
 
       - name: Run Vitest Suite
         run: npm test
+
+      - name: Build Production Bundle
+        run: npm run build
