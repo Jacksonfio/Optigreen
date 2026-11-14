@@ -47,8 +47,14 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
   let targetRegion = awsRegion || 'us-east-1';
   const workloadRepo = repo || name || 'new-microservice';
 
-  // Server-Side Telemetry Lookup: Query verified regional carbon intensity
-  const telemetry = await getServerSideRegionIntensity(targetRegion);
+  // Server-Side Telemetry Lookup: Query verified regional carbon intensity with typo guard
+  let telemetry;
+  try {
+    telemetry = await getServerSideRegionIntensity(targetRegion);
+  } catch (e: any) {
+    res.status(400).json({ error: e.message || `Invalid AWS region: ${targetRegion}` });
+    return;
+  }
   let intensity = (typeof carbonIntensity === 'number' && carbonIntensity > 0) ? carbonIntensity : telemetry.intensity;
   
   // Respect client intensityLimit or threshold parameter, fallback to system setting
@@ -458,9 +464,8 @@ export async function triggerEventBridge(req: Request, res: Response): Promise<v
       const pue = 1.15;
       const energyKwh = runnerHours * runnerKw * pue;
       
-      // Calculate carbon saved relative to initial queue hold snapshot or marginal fossil baseline
-      const marginalFossilIntensity = 480;
-      const baselineIntensity = Math.max(item.carbonIntensity, marginalFossilIntensity);
+      // Calculate carbon saved relative to initial queue hold snapshot (what would have been emitted without delay)
+      const baselineIntensity = (item.carbonIntensity && item.carbonIntensity > 0) ? item.carbonIntensity : 480;
       const dynamicSavedG = Math.max(0, energyKwh * (baselineIntensity - currentIntensity));
       const dynamicSavedKg = result.decision === 'SLA_AUTO_ESCALATED' || result.decision === 'OVERRIDE'
         ? 0 

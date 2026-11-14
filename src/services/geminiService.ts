@@ -168,14 +168,25 @@ export async function executeGeminiTool(name: string, args: Record<string, any>)
 
     const telemetryMap: Record<string, any> = {};
     for (const r of requested) {
-      const tel = await getServerSideRegionIntensity(r);
-      telemetryMap[r] = {
-        region: r,
-        intensity: tel.intensity,
-        regionName: tel.regionName,
-        isLive: tel.isLive,
-        status: tel.intensity <= 250 ? 'OPTIMAL_GREEN' : tel.intensity <= 500 ? 'MODERATE' : 'HIGH_CARBON_HOLD'
-      };
+      try {
+        const tel = await getServerSideRegionIntensity(r);
+        telemetryMap[r] = {
+          region: r,
+          intensity: tel.intensity,
+          regionName: tel.regionName,
+          isLive: tel.isLive,
+          status: tel.intensity <= 250 ? 'OPTIMAL_GREEN' : tel.intensity <= 500 ? 'MODERATE' : 'HIGH_CARBON_HOLD'
+        };
+      } catch (err: any) {
+        telemetryMap[r] = {
+          region: r,
+          intensity: 480,
+          regionName: 'Invalid/Unknown AWS Region',
+          isLive: false,
+          error: err.message || 'Invalid AWS region',
+          status: 'INVALID_REGION'
+        };
+      }
     }
     return telemetryMap;
   }
@@ -183,14 +194,32 @@ export async function executeGeminiTool(name: string, args: Record<string, any>)
   if (name === 'evaluateWanEgressVeto' || name === 'evaluateCrossRegionMigration') {
     const originRegion = args.originRegion || 'us-east-1';
     const targetRegion = args.targetRegion || 'us-west-2';
-    const originTel = await getServerSideRegionIntensity(originRegion);
-    const targetTel = await getServerSideRegionIntensity(targetRegion);
+    let originIntensity = Number(args.originIntensity);
+    let targetIntensity = Number(args.targetIntensity);
+
+    if (!originIntensity) {
+      try {
+        const originTel = await getServerSideRegionIntensity(originRegion);
+        originIntensity = originTel.intensity;
+      } catch {
+        originIntensity = 480;
+      }
+    }
+
+    if (!targetIntensity) {
+      try {
+        const targetTel = await getServerSideRegionIntensity(targetRegion);
+        targetIntensity = targetTel.intensity;
+      } catch {
+        targetIntensity = 250;
+      }
+    }
 
     return evaluateCrossRegionMigration({
       originRegion,
-      originIntensity: Number(args.originIntensity) || originTel.intensity,
+      originIntensity,
       targetRegion,
-      targetIntensity: Number(args.targetIntensity) || targetTel.intensity,
+      targetIntensity,
       artifactSizeGb: args.artifactSizeGb !== undefined ? Number(args.artifactSizeGb) : 1.0,
       computeHours: Number(args.computeHours) || 1.5,
       serverPowerKw: 2.5,

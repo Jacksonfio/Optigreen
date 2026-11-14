@@ -335,6 +335,10 @@ A critical security anti-pattern in production AI systems is invoking AI SDKs fr
 * **Strict Backend Isolation:** In OptiGreen, `@google/genai` is strictly isolated within the Node.js Express server ([`server.ts`](server.ts)).
 * `process.env.GEMINI_API_KEY` is loaded exclusively into server memory and never delivered to the client bundle.
 * The frontend React application interacts with Gemini through `/api/ai-optimize` and `/api/gemini/copilot`.
+* **Fail-Closed Security Model & Public Demo Flag:**
+  * When `OPTIGREEN_ADMIN_KEY` is configured in production, mutating administrative endpoints (`POST /api/queue/:id/override`, `POST /eventbridge/trigger`) strictly require an `Authorization: Bearer <token>` header, comparing tokens in constant time using `crypto.timingSafeEqual`.
+  * For open hackathon evaluations and sandbox judging, the system supports `DEMO_MODE=true`. When `DEMO_MODE=true` is explicitly configured, administrative endpoints remain open to judges without requiring authentication tokens. Outside explicit demo mode, endpoints fail closed.
+  * Inbound GitHub webhooks verify raw-byte HMAC SHA-256 signatures (`X-Hub-Signature-256`) when `WEBHOOK_SECRET` is configured.
 
 ### 2. Two-Tier Hybrid Architecture (Deterministic Edge Gate + Gemini 2.5 Flash Macro-Scheduler)
 A naive AI architecture forces every single git commit to block on a 1500ms LLM round-trip, degrading developer velocity and wasting compute. OptiGreen adopts an **industry-standard two-tier hybrid architecture**:

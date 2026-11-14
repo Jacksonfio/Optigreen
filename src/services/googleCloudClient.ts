@@ -99,10 +99,11 @@ class GoogleCloudClient {
   }
 
   public getStatus(): GoogleCloudStatus {
-    const isLive = Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.K_SERVICE || process.env.PORT);
+    const hasLiveGcpCredentials = Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    const isCloudRun = Boolean(process.env.K_SERVICE || process.env.PORT);
 
     return {
-      mode: isLive ? 'LIVE' : 'SANDBOX',
+      mode: isCloudRun ? 'LIVE' : 'SANDBOX',
       projectId: this.config.projectId,
       primaryRegion: this.config.region,
       cloudRun: {
@@ -114,12 +115,12 @@ class GoogleCloudClient {
       pubsub: {
         topic: this.config.pubsubTopic,
         publishedEventsCount: this.publishedEvents.length,
-        status: isLive ? 'CONNECTED' : 'EMULATED'
+        status: hasLiveGcpCredentials ? 'CONNECTED' : 'EMULATED'
       },
       firestore: {
         collection: this.config.firestoreCollection,
         synchronizedBlocksCount: this.firestoreSyncedBlocks.length,
-        status: isLive ? 'SYNCHRONIZED' : 'LOCAL_PERSISTENCE'
+        status: hasLiveGcpCredentials ? 'SYNCHRONIZED' : 'LOCAL_PERSISTENCE'
       },
       artifactRegistry: {
         repository: this.config.artifactRegistry,

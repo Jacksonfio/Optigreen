@@ -173,6 +173,56 @@ describe('OptiGreen REST API Endpoints', () => {
     expect(res.body.audit.provenance_signature).toBeDefined();
   });
 
+  it('POST /api/queue/enqueue rejects unknown/typo regions with 400 error instead of hanging', async () => {
+    const res = await request(app)
+      .post('/api/queue/enqueue')
+      .send({
+        repo: 'analytics-api',
+        awsRegion: 'us-eats-1'
+      });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid or unsupported AWS region');
+  });
+
+  it('POST /api/queue/:id/override enforces fail-closed auth when OPTIGREEN_ADMIN_KEY is set and DEMO_MODE is not true', async () => {
+    const originalKey = process.env.OPTIGREEN_ADMIN_KEY;
+    const originalDemo = process.env.DEMO_MODE;
+
+    try {
+      process.env.OPTIGREEN_ADMIN_KEY = 'test-admin-secret-key';
+      delete process.env.DEMO_MODE; // unset demo mode (defaults to fail-closed)
+
+      // 1. Missing token -> 401
+      const resMissing = await request(app).post('/api/queue/sqs-msg-123/override');
+      expect(resMissing.status).toBe(401);
+      expect(resMissing.body.error).toContain('Missing Bearer Token');
+
+      // 2. Invalid token -> 403
+      const resInvalid = await request(app)
+        .post('/api/queue/sqs-msg-123/override')
+        .set('Authorization', 'Bearer wrong-secret');
+      expect(resInvalid.status).toBe(403);
+      expect(resInvalid.body.error).toContain('Invalid Admin Token');
+
+      // 3. Valid token passes auth
+      const resValid = await request(app)
+        .post('/api/queue/sqs-msg-123/override')
+        .set('Authorization', 'Bearer test-admin-secret-key');
+      // Should not be 401 or 403 (either 200 or 404 if item not in queue)
+      expect(resValid.status).not.toBe(401);
+      expect(resValid.status).not.toBe(403);
+
+      // 4. Explicit DEMO_MODE='true' opens access for hackathon judges
+      process.env.DEMO_MODE = 'true';
+      const resDemo = await request(app).post('/api/queue/sqs-msg-123/override');
+      expect(resDemo.status).not.toBe(401);
+      expect(resDemo.status).not.toBe(403);
+    } finally {
+      process.env.OPTIGREEN_ADMIN_KEY = originalKey;
+      process.env.DEMO_MODE = originalDemo;
+    }
+  });
+
   it('POST /api/gemini/copilot provides personalized DevOps advice, research paper synthesis, and code generation', async () => {
     // Mode 1: DevOps advisor
     const resAdvisor = await request(app)

@@ -47,10 +47,13 @@ export function verifyWebhookSignature(req: Request, res: Response, next: NextFu
 
 export function requireAdminAuth(req: Request, res: Response, next: NextFunction): void {
   const adminApiKey = process.env.OPTIGREEN_ADMIN_KEY || process.env.API_SECRET_KEY;
-  const isDemoMode = process.env.DEMO_MODE !== 'false'; // Defaults to true for frictionless hackathon judge evaluation
+  // Fail-closed security model:
+  // If an admin key is configured, enforce Bearer token verification by default.
+  // Bypass is ONLY permitted if DEMO_MODE === 'true' is explicitly set.
+  const isExplicitDemo = process.env.DEMO_MODE === 'true';
   const authHeader = req.headers['authorization'];
 
-  if (adminApiKey && !isDemoMode) {
+  if (adminApiKey && !isExplicitDemo) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       res.status(401).json({
         error: 'Unauthorized: Missing Bearer Token',
@@ -71,6 +74,6 @@ export function requireAdminAuth(req: Request, res: Response, next: NextFunction
     }
   }
 
-  res.setHeader('X-OptiGreen-Auth', adminApiKey && !isDemoMode ? 'AUTHENTICATED' : 'DEMO_MODE_ALLOWED');
+  res.setHeader('X-OptiGreen-Auth', adminApiKey && !isExplicitDemo ? 'AUTHENTICATED' : 'DEMO_MODE_ALLOWED');
   next();
 }
