@@ -19,6 +19,29 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+// Universal CORS headers for external AI crawlers, hackathon evaluators (e.g. Markwise.in), and API consumers
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, x-hub-signature-256');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  next();
+});
+
+// Universal health check routes for automated evaluators and uptime monitors
+app.get(['/health', '/healthz', '/ping', '/status'], (_req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'OptiGreen CI/CD Carbon Scheduler',
+    version: '1.0.0',
+    deployment: 'Google Cloud Run (asia-south1)',
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use(express.json({
   verify: (req: any, _res, buf) => {
     req.rawBody = buf;
