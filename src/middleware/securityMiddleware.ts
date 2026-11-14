@@ -13,6 +13,16 @@ import crypto from 'crypto';
 export function verifyWebhookSignature(req: Request, res: Response, next: NextFunction): void {
   const secret = process.env.WEBHOOK_SECRET || process.env.GITHUB_WEBHOOK_SECRET;
   const signature = req.headers['x-hub-signature-256'] as string;
+  const isStrictProduction = process.env.NODE_ENV === 'production' && process.env.DEMO_MODE !== 'true';
+
+  // In strict production mode, fail closed if WEBHOOK_SECRET is not configured
+  if (isStrictProduction && !secret) {
+    res.status(500).json({
+      error: 'Misconfigured server: WEBHOOK_SECRET is required in strict production mode',
+      security: 'WEBHOOK_SECRET_MANDATORY_IN_PROD'
+    });
+    return;
+  }
 
   // In production with a configured secret, require and verify HMAC SHA-256
   if (secret) {

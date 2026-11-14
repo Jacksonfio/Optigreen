@@ -117,6 +117,7 @@ export async function getAllRegionsTelemetry(): Promise<{
     lat: number;
     lng: number;
     gridScore: number;
+    dataSource: 'ELECTRICITY_MAPS_LIVE' | 'CALIBRATED_DIURNAL_MODEL';
   }>;
 }> {
   const apiKey = process.env.ELECTRICITY_API_KEY || process.env.ELECTRICITY_MAPS_API_KEY;
@@ -159,6 +160,10 @@ export async function getAllRegionsTelemetry(): Promise<{
       trend = solarVariation < 0 ? 'down' : solarVariation > 0 ? 'up' : 'flat';
     }
 
+    const hasLiveReading = isRealApi && fetchedResults[reg.zoneKey] !== undefined;
+    const dataSource: 'ELECTRICITY_MAPS_LIVE' | 'CALIBRATED_DIURNAL_MODEL' = hasLiveReading
+      ? 'ELECTRICITY_MAPS_LIVE'
+      : 'CALIBRATED_DIURNAL_MODEL';
     const status: 'OPTIMAL' | 'MODERATE' | 'HIGH' = currentIntensity <= 250 ? 'OPTIMAL' : currentIntensity <= 500 ? 'MODERATE' : 'HIGH';
     const gridScore = Math.max(5, Math.min(100, Math.round((1 - currentIntensity / 800) * 100)));
 
@@ -170,6 +175,7 @@ export async function getAllRegionsTelemetry(): Promise<{
       renewablePct: reg.baseRenewable,
       status,
       trend,
+      dataSource,
       forecast24h: [
         Math.max(10, currentIntensity - 18),
         Math.max(10, currentIntensity - 8),

@@ -6,9 +6,11 @@
 import { SQSClient, SendMessageCommand, ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 
 export interface SqsSendResult {
+  mode: 'LIVE' | 'SANDBOX';
   simulated: boolean;
   messageId: string;
   region: string | null;
+  status: 'DELIVERED_TO_AWS_SQS' | 'SIMULATED_LOCAL_DISPATCH';
 }
 
 let cachedClient: SQSClient | null = null;
@@ -35,7 +37,13 @@ function getClient(): SQSClient {
 
 export async function sendToSqs(message: Record<string, unknown>): Promise<SqsSendResult> {
   if (!isSqsConfigured()) {
-    return { simulated: true, messageId: `sim-${Date.now()}`, region: null };
+    return {
+      mode: 'SANDBOX',
+      simulated: true,
+      messageId: `sim-${Date.now()}`,
+      region: null,
+      status: 'SIMULATED_LOCAL_DISPATCH'
+    };
   }
 
   const client = getClient();
@@ -51,7 +59,13 @@ export async function sendToSqs(message: Record<string, unknown>): Promise<SqsSe
   });
 
   const result = await client.send(command);
-  return { simulated: false, messageId: result.MessageId ?? `aws-${Date.now()}`, region: process.env.AWS_REGION ?? null };
+  return {
+    mode: 'LIVE',
+    simulated: false,
+    messageId: result.MessageId ?? `aws-${Date.now()}`,
+    region: process.env.AWS_REGION ?? null,
+    status: 'DELIVERED_TO_AWS_SQS'
+  };
 }
 
 export async function receiveFromSqs(maxNumberOfMessages = 10): Promise<Record<string, unknown>[]> {

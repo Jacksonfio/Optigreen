@@ -320,17 +320,21 @@ export class PersistentDatabase {
       }
     } catch {}
 
+    const hasGcpCredentials = Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.FIRESTORE_PROJECT_ID);
+
     return {
       mode: 'CONTAINER_LOCAL_JSON',
-      storageType: 'EPHEMERAL_CONTAINER_DISK',
+      storageType: hasGcpCredentials ? 'GOOGLE_CLOUD_FIRESTORE' : 'EPHEMERAL_CONTAINER_DISK',
       dbPath: this.dbFilePath,
       totalQueued: this.memoryCache.queue.length,
       totalActivities: this.memoryCache.activities.length,
       currentThreshold: this.memoryCache.settings.threshold,
       diskSizeBytes,
       lastPersisted: this.memoryCache.lastPersisted,
-      isDurable: false,
-      durabilityNote: 'Container filesystem is ephemeral on Cloud Run; multi-region durability syncs via Google Cloud Pub/Sub & Firestore.'
+      isDurable: hasGcpCredentials,
+      durabilityNote: hasGcpCredentials
+        ? 'Durable multi-region replication managed via Google Cloud Firestore.'
+        : 'Container filesystem is ephemeral on Cloud Run; multi-region durability syncs via Google Cloud Pub/Sub & Firestore.'
     };
   }
 }

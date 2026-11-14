@@ -18,8 +18,25 @@ import { generateGitHubPrMarkdownComment, generateSlackBlockKitMessage } from '.
 export async function getQueue(req: Request, res: Response): Promise<void> {
   const queue = globalDb.getQueue();
   const threshold = globalDb.getSettings().threshold;
+  const isStrictProduction = process.env.NODE_ENV === 'production' && process.env.DEMO_MODE !== 'true';
+  const adminApiKey = process.env.OPTIGREEN_ADMIN_KEY || process.env.API_SECRET_KEY;
+  const authHeader = req.headers['authorization'];
+  const hasValidAuth = Boolean(
+    !adminApiKey || 
+    (authHeader && authHeader.startsWith('Bearer ') && authHeader.substring(7) === adminApiKey)
+  );
+
+  // In strict production mode without admin credentials, sanitize commit details
+  const sanitizedQueue = (isStrictProduction && !hasValidAuth)
+    ? queue.map(item => ({
+        ...item,
+        commitSha: item.commitSha ? `${item.commitSha.substring(0, 3)}***` : '***',
+        commitAuthor: 'REDACTED (Auth Required)'
+      }))
+    : queue;
+
   res.json({
-    queue,
+    queue: sanitizedQueue,
     threshold,
     totalQueued: queue.length,
     interceptorMetrics: globalDeploymentInterceptor.getMetrics()
@@ -55,7 +72,12 @@ export async function enqueueWorkload(req: Request, res: Response): Promise<void
     res.status(400).json({ error: e.message || `Invalid AWS region: ${targetRegion}` });
     return;
   }
-  let intensity = (typeof carbonIntensity === 'number' && carbonIntensity > 0) ? carbonIntensity : telemetry.intensity;
+  // In strict production, always use trusted server-side regional telemetry.
+  // Client intensity override is only permitted in explicit testing or demo sandbox mode.
+  const allowClientOverride = process.env.DEMO_MODE === 'true' || process.env.NODE_ENV === 'test';
+  let intensity = (allowClientOverride && typeof carbonIntensity === 'number' && carbonIntensity > 0)
+    ? carbonIntensity 
+    : telemetry.intensity;
   
   // Respect client intensityLimit or threshold parameter, fallback to system setting
   const threshold = (typeof intensityLimit === 'number' && intensityLimit > 0) 
