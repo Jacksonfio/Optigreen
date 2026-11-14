@@ -127,6 +127,8 @@ export async function getServerSideRegionIntensity(region: string): Promise<{ in
 export async function getAllRegionsTelemetry(): Promise<{
   timestamp: string;
   isRealApi: boolean;
+  liveRegionsCount: number;
+  fallbackRegionsCount: number;
   count: number;
   regions: Array<{
     zoneKey: string;
