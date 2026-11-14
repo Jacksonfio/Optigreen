@@ -263,14 +263,14 @@ OptiGreen is built with **enterprise dual-mode flexibility**: every external clo
 
 The live integration status is inspectable anytime at `GET /api/integrations/status`:
 
-| Service | Live Mode (Configured) | Sandbox Mode (Default / Offline) |
+| Service | Live Mode (Configured) | Sandbox Mode (Default / Zero-Config) |
 | :--- | :--- | :--- |
-| **Google Gemini AI** | Real `@google/genai` calls to `gemini-2.5-flash` with strict JSON schema enforcement | Deterministic heuristic advisory generator matching schema |
-| **AWS SQS** | Real queue dispatch & receipt via `@aws-sdk/client-sqs` (`SendMessageCommand`, `ReceiveMessageCommand`) | In-memory priority queue with simulated message IDs (`sim-*`) |
-| **Electricity Maps v3** | Live carbon telemetry ($gCO_2eq/kWh$) per regional zone | Calibrated synthetic grid model with real-time fluctuation noise |
-| **ESG Audit Ledger** | Real SHA-256 Web Crypto hash-chained ledger served at `GET /api/ledger` | **Identical**: Cryptographic hashing runs locally and is always real |
-| **Esri Satellite Tiles** | Public Esri World Imagery raster tiles via Leaflet | **Identical**: High-definition satellite imagery rendered directly |
-| **AWS EventBridge** | Documented cron triggers `/api/eventbridge/trigger` | Same endpoint drives the local automated re-evaluation loop |
+| **Google Gemini AI** | Official `@google/genai` calls to `gemini-2.5-flash` with autonomous tool calling & timeout guard | Deterministic Pareto solver with explicit `FALLBACK_QUOTA_EXHAUSTED` / `SANDBOX` status |
+| **Electricity Maps v3** | Real-time carbon telemetry ($gCO_2eq/kWh$) for 17 AWS regions via API key with 5-min TTL cache | Calibrated diurnal model fallback with explicit `liveRegionsCount` & `fallbackRegionsCount` |
+| **Runner Execution Protocol** | Runner Adapter receiving dispatches and tracking 8-stage lifecycle to remote workers | Safe local demonstration runner calculating exact duration, kWh energy & carbon emission |
+| **AWS SQS** | Real queue dispatch & receipt via `@aws-sdk/client-sqs` (`SendMessageCommand`) | Local priority sandbox queue returning explicit `status: "SIMULATED_LOCAL_DISPATCH"` |
+| **Database Persistence** | Multi-region Google Cloud Firestore synchronization (`isDurable: true`) | Ephemeral container disk JSON storage transparently reporting `isDurable: false` |
+| **ESG Audit Ledger** | Real cryptographic SHA-256 Merkle block chain served at `GET /api/ledger` | **Identical**: Cryptographic hash chaining is always live and verified locally |
 
 ---
 
