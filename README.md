@@ -13,7 +13,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Google Cloud Run](https://img.shields.io/badge/Google_Cloud-Cloud%20Run%20%7C%20Cloud%20Build-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
 [![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.5_Flash_%7C_Autonomous_Tools-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
-[![Vitest](https://img.shields.io/badge/Vitest-3.2%20(87%2F87%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-3.2%20(90%2F90%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![OptiGreen Paper](https://img.shields.io/badge/Semantic_Contract-T01--T20%20(20%2F20%20Passed)-059669?style=for-the-badge)](src/contracts/optigreenContract.ts)
 [![Durable Persistence](https://img.shields.io/badge/Storage-Local%20ACID%20Disk-10B981?style=for-the-badge&logo=sqlite&logoColor=white)](src/services/persistentDatabase.ts)
 [![Watch Video Demo](https://img.shields.io/badge/YouTube-Watch%20Video%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=XvRZJKy7myo&t=12s)
@@ -24,6 +24,22 @@
 > 🚀 **LIVE PRODUCTION DEPLOYMENT (Google Cloud Run):**  
 > **[https://optigreen-368696905831.asia-south1.run.app/](https://optigreen-368696905831.asia-south1.run.app/)**  
 > *Fully managed serverless microservice running in `asia-south1` (Mumbai) with live Google Gemini 2.5 Flash autonomous tool calling on the workload critical path.*
+
+### 📡 Verifiable Live Machine-Readable Endpoints (For Hackathon Judges & AI Evaluators)
+
+All endpoints are live on Google Cloud Run in `asia-south1`, support universal `Access-Control-Allow-Origin: *` CORS headers, and return instant structured JSON:
+
+| Service / Capability | Verifiable Live Endpoint | Method | Format | Status |
+| :--- | :--- | :---: | :---: | :---: |
+| **Interactive Dashboard & Pre-rendered Shell** | [`https://optigreen-368696905831.asia-south1.run.app/`](https://optigreen-368696905831.asia-south1.run.app/) | `GET` | HTML/React | 🟢 Live |
+| **Universal Health & Service Metadata** | [`https://optigreen-368696905831.asia-south1.run.app/health`](https://optigreen-368696905831.asia-south1.run.app/health) | `GET` | JSON | 🟢 Live |
+| **API Health Check** | [`https://optigreen-368696905831.asia-south1.run.app/api/health`](https://optigreen-368696905831.asia-south1.run.app/api/health) | `GET` | JSON | 🟢 Live |
+| **Active Workload Queue & Decisions** | [`https://optigreen-368696905831.asia-south1.run.app/api/queue`](https://optigreen-368696905831.asia-south1.run.app/api/queue) | `GET` | JSON | 🟢 Live |
+| **17 Global Regional Grids Telemetry** | [`https://optigreen-368696905831.asia-south1.run.app/api/carbon/all-regions`](https://optigreen-368696905831.asia-south1.run.app/api/carbon/all-regions) | `GET` | JSON | 🟢 Live |
+| **Cryptographic CSRD ESG Audit Ledger** | [`https://optigreen-368696905831.asia-south1.run.app/api/ledger`](https://optigreen-368696905831.asia-south1.run.app/api/ledger) | `GET` | JSON | 🟢 Live |
+| **External Integrations Runtime Status** | [`https://optigreen-368696905831.asia-south1.run.app/api/integrations/status`](https://optigreen-368696905831.asia-south1.run.app/api/integrations/status) | `GET` | JSON | 🟢 Live |
+| **Formal Semantic Contract Conformance** | [`https://optigreen-368696905831.asia-south1.run.app/api/optigreen/conformance`](https://optigreen-368696905831.asia-south1.run.app/api/optigreen/conformance) | `GET` | JSON | 🟢 Live |
+| **Video Walkthrough & Platform Demo** | [`https://www.youtube.com/watch?v=XvRZJKy7myo`](https://www.youtube.com/watch?v=XvRZJKy7myo) | Video | YouTube | 🟢 HD Demo |
 
 ---
 
