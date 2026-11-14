@@ -246,4 +246,49 @@ describe('OptiGreen REST API Endpoints', () => {
     expect(resCode.status).toBe(200);
     expect(resCode.body.codeSnippet).toContain('OptiGreen');
   }, 30000);
+
+  it('GET /api/gemini/status returns transparent runtime status and declared tools', async () => {
+    const res = await request(app).get('/api/gemini/status');
+    expect(res.status).toBe(200);
+    expect(res.body.model).toBe('gemini-2.5-flash');
+    expect(res.body.sdk).toBe('@google/genai');
+    expect(res.body.criticalPathIntegrated).toBe(true);
+    expect(Array.isArray(res.body.tools)).toBe(true);
+    expect(res.body.tools).toContain('inspectRegionalGridTelemetry');
+    expect(res.body.tools).toContain('evaluateWanEgressVeto');
+  });
+
+  it('POST /api/runner/execute-demo and GET /api/runner/executions track genuine execution lifecycle', async () => {
+    // 1. Initial executions list
+    const resInitial = await request(app).get('/api/runner/executions');
+    expect(resInitial.status).toBe(200);
+    expect(typeof resInitial.body.total).toBe('number');
+
+    // 2. Execute controlled demo run
+    const resDemo = await request(app)
+      .post('/api/runner/execute-demo')
+      .send({
+        workloadId: 'wl-hackathon-audit-test',
+        targetRegion: 'eu-north-1',
+        carbonIntensity: 25,
+        artifactSizeGb: 2.0
+      });
+
+    expect(resDemo.status).toBe(200);
+    expect(resDemo.body.success).toBe(true);
+    const record = resDemo.body.record;
+    expect(record.workloadId).toBe('wl-hackathon-audit-test');
+    expect(record.state).toBe('COMPLETED');
+    expect(record.runnerType).toBe('LOCAL_SANDBOX_RUNNER');
+    expect(record.durationSeconds).toBe(12);
+    expect(record.energyConsumedKwh).toBeGreaterThan(0);
+    expect(record.actualCarbonEmittedKg).toBeGreaterThan(0);
+    expect(record.logs.length).toBeGreaterThan(2);
+
+    // 3. Query execution by ID
+    const resSingle = await request(app).get('/api/runner/execution/wl-hackathon-audit-test');
+    expect(resSingle.status).toBe(200);
+    expect(resSingle.body.workloadId).toBe('wl-hackathon-audit-test');
+    expect(resSingle.body.state).toBe('COMPLETED');
+  });
 });

@@ -30,7 +30,8 @@ export interface GeminiRerouteProposal {
   netBenefitUsd: number;
   toolsExecuted: ToolExecutionRecord[];
   reasoning: string;
-  modeStatus: 'LIVE' | 'SANDBOX';
+  modeStatus: 'LIVE' | 'SANDBOX' | 'FALLBACK_QUOTA_EXHAUSTED' | 'FALLBACK_TIMEOUT' | 'FALLBACK_ERROR' | string;
+  geminiStatus?: 'GEMINI_LIVE' | 'GEMINI_FALLBACK' | 'GEMINI_UNAVAILABLE';
 }
 
 export interface EnqueueWorkloadContext {
@@ -48,6 +49,28 @@ export interface EnqueueWorkloadContext {
 // -----------------------------------------------------------------------------
 // Official Gemini 2.5 Flash Function Declarations for Autonomous CI/CD Orchestration
 // -----------------------------------------------------------------------------
+const withTimeout = <T>(promise: Promise<T>, timeoutMs = 8000, context = 'Operation'): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${context} timed out after ${timeoutMs}ms`)), timeoutMs)
+    )
+  ]);
+};
+
+export function getGeminiRuntimeStatus() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const isConfigured = Boolean(apiKey && apiKey !== 'MY_GEMINI_API_KEY');
+  return {
+    configured: isConfigured,
+    model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+    sdk: '@google/genai',
+    criticalPathIntegrated: true,
+    toolDefinitionsCount: GEMINI_TOOL_DECLARATIONS[0]?.functionDeclarations?.length || 0,
+    activeMode: isConfigured ? 'LIVE_WITH_FALLBACK_GUARD' : 'DETERMINISTIC_SANDBOX',
+    tools: (GEMINI_TOOL_DECLARATIONS[0]?.functionDeclarations || []).map(f => f.name)
+  };
+}
 export const GEMINI_TOOL_DECLARATIONS = [
   {
     functionDeclarations: [
@@ -304,6 +327,10 @@ export async function proposeCandidateRerouting(context: EnqueueWorkloadContext)
     };
   }
 
+  let fallbackReason: 'SANDBOX' | 'FALLBACK_QUOTA_EXHAUSTED' | 'FALLBACK_TIMEOUT' | 'FALLBACK_ERROR' = 'SANDBOX';
+  let geminiRuntimeMode: 'GEMINI_LIVE' | 'GEMINI_FALLBACK' | 'GEMINI_UNAVAILABLE' = 
+    (apiKey && apiKey !== 'MY_GEMINI_API_KEY') ? 'GEMINI_LIVE' : 'GEMINI_UNAVAILABLE';
+
   // 1. If Live Gemini API Key is configured, run the multi-turn tool-calling loop via official SDK
   if (apiKey && apiKey !== 'MY_GEMINI_API_KEY') {
     try {
@@ -320,14 +347,18 @@ Always ground your calculations in exact tool telemetry.`;
 
       const prompt = `Evaluate candidate rerouting for workload ${context.workloadId} (${context.repo}). Origin: ${context.originRegion} at ${context.carbonIntensity} gCO2/kWh. SLA Tier: ${context.slaTier}. Artifact Size: ${artifactSizeGb}GB.`;
 
-      const initialResponse = await ai.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        config: {
-          systemInstruction,
-          tools: GEMINI_TOOL_DECLARATIONS
-        }
-      });
+      const initialResponse = await withTimeout(
+        ai.models.generateContent({
+          model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          config: {
+            systemInstruction,
+            tools: GEMINI_TOOL_DECLARATIONS
+          }
+        }),
+        8000,
+        'Gemini Initial Dispatch'
+      );
 
       const functionCalls = initialResponse.functionCalls;
       if (functionCalls && functionCalls.length > 0) {
@@ -357,11 +388,15 @@ Always ground your calculations in exact tool telemetry.`;
         }
 
         // Multi-turn synthesis turn
-        const synthesized = await ai.models.generateContent({
-          model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-          contents: followUpContents,
-          config: { systemInstruction }
-        });
+        const synthesized = await withTimeout(
+          ai.models.generateContent({
+            model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+            contents: followUpContents,
+            config: { systemInstruction }
+          }),
+          8000,
+          'Gemini Follow-up Synthesis'
+        );
 
         // Extract executed tool findings
         let telemetryStep = toolsExecuted.find(t => t.tool === 'inspectRegionalGridTelemetry' || t.tool === 'queryRegionalGridTelemetry');
@@ -414,11 +449,21 @@ Always ground your calculations in exact tool telemetry.`;
           netBenefitUsd: egressStep?.output?.netBenefitUsd ?? 0.40,
           toolsExecuted,
           reasoning: synthesized.text || `Autonomous candidate reroute to ${candidateRegion} proposed (${candidateIntensity} gCO2/kWh vs ${context.carbonIntensity} gCO2/kWh origin).`,
-          modeStatus: 'LIVE'
+          modeStatus: 'LIVE',
+          geminiStatus: 'GEMINI_LIVE'
         };
       }
     } catch (err: any) {
-      console.warn('Live Gemini critical-path tool loop fallback to deterministic executor:', err?.message || err);
+      const errMsg = String(err?.message || err);
+      if (err?.status === 429 || errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED')) {
+        fallbackReason = 'FALLBACK_QUOTA_EXHAUSTED';
+      } else if (errMsg.includes('timed out')) {
+        fallbackReason = 'FALLBACK_TIMEOUT';
+      } else {
+        fallbackReason = 'FALLBACK_ERROR';
+      }
+      geminiRuntimeMode = 'GEMINI_FALLBACK';
+      console.warn(`Live Gemini critical-path tool loop fallback [${fallbackReason}]:`, errMsg);
     }
   }
 
@@ -495,7 +540,8 @@ Always ground your calculations in exact tool telemetry.`;
     netBenefitUsd: egressResult.netBenefitUsd,
     toolsExecuted,
     reasoning,
-    modeStatus: 'SANDBOX'
+    modeStatus: fallbackReason,
+    geminiStatus: geminiRuntimeMode
   };
 }
 

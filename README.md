@@ -38,6 +38,8 @@ All endpoints are live on Google Cloud Run in `asia-south1`, support universal `
 | **17 Global Regional Grids Telemetry** | [`https://optigreen-368696905831.asia-south1.run.app/api/carbon/all-regions`](https://optigreen-368696905831.asia-south1.run.app/api/carbon/all-regions) | `GET` | JSON | 🟢 Live |
 | **Cryptographic CSRD ESG Audit Ledger** | [`https://optigreen-368696905831.asia-south1.run.app/api/ledger`](https://optigreen-368696905831.asia-south1.run.app/api/ledger) | `GET` | JSON | 🟢 Live |
 | **External Integrations Runtime Status** | [`https://optigreen-368696905831.asia-south1.run.app/api/integrations/status`](https://optigreen-368696905831.asia-south1.run.app/api/integrations/status) | `GET` | JSON | 🟢 Live |
+| **Gemini 2.5 Flash Autonomous Tool Status** | [`https://optigreen-368696905831.asia-south1.run.app/api/gemini/status`](https://optigreen-368696905831.asia-south1.run.app/api/gemini/status) | `GET` | JSON | 🟢 Live |
+| **Runner Adapter & Execution Telemetry** | [`https://optigreen-368696905831.asia-south1.run.app/api/runner/executions`](https://optigreen-368696905831.asia-south1.run.app/api/runner/executions) | `GET` | JSON | 🟢 Live |
 | **Formal Semantic Contract Conformance** | [`https://optigreen-368696905831.asia-south1.run.app/api/optigreen/conformance`](https://optigreen-368696905831.asia-south1.run.app/api/optigreen/conformance) | `GET` | JSON | 🟢 Live |
 | **Video Walkthrough & Platform Demo** | [`https://www.youtube.com/watch?v=XvRZJKy7myo`](https://www.youtube.com/watch?v=XvRZJKy7myo) | Video | YouTube | 🟢 HD Demo |
 
@@ -630,7 +632,7 @@ npm test
 ### Verified Test Suites:
 * **`test/conformanceSuite.test.ts` (20 tests)**: Evaluates the complete **OptiGreen Semantic Contract (T01 – T20)**, validating the 9 record types (`workload`, `observation`, `candidate`, `constraint`, `objective`, `decision`, `action`, `outcome`, `audit`), `NO_FEASIBLE_SOLUTION` first-class recording with failure attribution, error taxonomy (`E_SCHEMA`, `E_UNIT`, `E_VERSION`, `E_CONSTRAINT`, `E_POLICY`, `E_REF`), and 3 conformance levels (L1, L2, L3).
 * **`test/enterpriseDrawbacks.test.ts` (10 tests)**: Validates solutions to the 5 enterprise cloud dilemmas: Data Affinity Matrix enforcement, WAN latency penalty modeling, PR merge probability classifier ($\ge 85\%$), verified historical grid telemetry replay, and 1-click self-serve developer queue overrides.
-* **`test/apiEndpoints.test.ts` (12 tests)**: Integration tests verifying REST endpoints (`/api/health`, `/api/integrations/status`, `/api/carbon/all-regions`, `/api/ledger`, `/api/queue/enqueue`, `/api/settings/threshold`, `/api/ai-optimize`, `/api/optigreen/conformance`, `/api/optigreen/solve`, `/api/gemini/copilot`, and `/api/database/stats`).
+* **`test/apiEndpoints.test.ts` (16 tests)**: Integration tests verifying REST endpoints (`/api/health`, `/api/integrations/status`, `/api/carbon/all-regions`, `/api/ledger`, `/api/queue/enqueue`, `/api/settings/threshold`, `/api/ai-optimize`, `/api/optigreen/conformance`, `/api/optigreen/solve`, `/api/gemini/copilot`, `/api/database/stats`, `/api/gemini/status`, `/api/runner/executions`, and `/api/runner/execute-demo`).
 * **`test/carbonDecisionEngine.test.ts` (11 tests)**: Verifies PROCEED decisions, HELD queues, P1 hotfixes, P2 60-min SLA auto-escalation, boundary math, and **Pareto Egress vs. Carbon Arbitrage** (vetoing migrations where bandwidth costs exceed emissions value).
 * **`test/geminiCriticalPath.test.ts` (8 tests)**: Verifies Google Gemini 2.5 Flash active tool calling on the deployment critical path, handling live dynamic reroutes, SLA overrides, and error fallbacks.
 * **`test/deploymentInterceptor.test.ts` (7 tests)**: Verifies exponential backoff calculations, retry recovery, maximum retry exhaustion, circuit-breaker tripping, open state rejection, and manual state reset.
@@ -770,6 +772,19 @@ Content-Type: application/json
 }
 ```
 Allows engineers to bypass a carbon hold directly from GitHub PR / Slack bot comments, auto-dispatching the workload immediately with an explicit ESG audit ledger record.
+
+### 10. Gemini 2.5 Flash Autonomous Tool Engine & Runtime Status
+```http
+GET /api/gemini/status
+```
+Returns active model configuration (`gemini-2.5-flash`), official `@google/genai` SDK status, active mode (`LIVE_WITH_FALLBACK_GUARD` or `DETERMINISTIC_SANDBOX`), and the 4 critical-path tool declarations.
+
+### 11. Runner Adapter Protocol & Execution Telemetry
+```http
+GET /api/runner/executions
+POST /api/runner/execute-demo
+```
+Separates scheduling decision logic from physical runner execution, recording the complete lifecycle: `RECEIVED -> VALIDATED -> ANALYZED -> SCHEDULED -> DISPATCHED -> ACCEPTED_BY_RUNNER -> RUNNING -> COMPLETED`. `POST /api/runner/execute-demo` executes a safe local test run with exact kWh energy and carbon emission attribution.
 
 ---
 
