@@ -382,8 +382,22 @@ Always ground your calculations in exact tool telemetry.`;
               role: 'user',
               parts: [{ functionResponse: { name: call.name, response: { output: toolOutput } } }]
             });
-          } catch (tErr) {
+          } catch (tErr: any) {
             console.warn(`Critical path tool call error [${call.name}]:`, tErr);
+            const errStr = String(tErr?.message || tErr);
+            toolsExecuted.push({
+              tool: call.name,
+              input: call.args || {},
+              output: { error: errStr, status: 'FAILED' }
+            });
+            followUpContents.push({
+              role: 'model',
+              parts: [{ functionCall: { name: call.name, args: call.args } }]
+            });
+            followUpContents.push({
+              role: 'user',
+              parts: [{ functionResponse: { name: call.name, response: { error: 'TOOL_EXECUTION_FAILED', details: errStr } } }]
+            });
           }
         }
 

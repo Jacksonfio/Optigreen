@@ -34,15 +34,12 @@ export const AWS_REGIONS_CATALOG: AwsRegionMetadata[] = [
   { awsRegion: 'af-south-1', regionName: 'Africa (Cape Town)', zoneKey: 'ZA', baseIntensity: 790, baseRenewable: 8, lat: -33.9, lng: 18.4 }
 ];
 
-// Live Electricity Maps Commercial / Developer API Key
-export const DEFAULT_ELECTRICITY_API_KEY = 'em_NCGEe9mtUwt6X7YwQ7fwjRy4KPZ3ADKb';
-
-export function resolveApiKey(): string {
+export function resolveApiKey(): string | null {
   const envKey = process.env.ELECTRICITY_API_KEY || process.env.ELECTRICITY_MAPS_API_KEY;
   if (envKey && envKey !== 'YOUR_ELECTRICITY_MAPS_API_KEY' && envKey !== 'MY_ELECTRICITY_MAPS_API_KEY') {
     return envKey;
   }
-  return DEFAULT_ELECTRICITY_API_KEY;
+  return null;
 }
 
 // 5-minute in-memory cache to respect API rate limits and maintain sub-millisecond response latency
@@ -236,9 +233,14 @@ export async function getAllRegionsTelemetry(): Promise<{
     };
   });
 
+  const liveCount = regionsData.filter(r => r.dataSource === 'ELECTRICITY_MAPS_LIVE').length;
+  const fallbackCount = regionsData.length - liveCount;
+
   return {
     timestamp: new Date().toISOString(),
-    isRealApi,
+    isRealApi: liveCount > 0,
+    liveRegionsCount: liveCount,
+    fallbackRegionsCount: fallbackCount,
     count: regionsData.length,
     regions: regionsData
   };
