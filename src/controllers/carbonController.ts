@@ -4,11 +4,24 @@
  */
 
 import { Request, Response } from 'express';
-import { getAllRegionsTelemetry } from '../services/regionalCarbonService';
+import { getAllRegionsTelemetry, AWS_REGIONS_CATALOG } from '../services/regionalCarbonService';
 import { getHistoricalReplayScenario, HISTORICAL_GRID_ARCHIVE } from '../services/historicalGridService';
 
 export async function getCarbonIntensity(req: Request, res: Response): Promise<void> {
-  const zone = (req.query.zone as string) || 'US-CAL-CISO';
+  const regionParam = (req.query.region as string)?.toLowerCase();
+  let zone = (req.query.zone as string) || '';
+
+  if (regionParam) {
+    const matched = AWS_REGIONS_CATALOG.find(r => r.awsRegion.toLowerCase() === regionParam);
+    if (matched) {
+      zone = matched.zoneKey;
+    }
+  }
+
+  if (!zone) {
+    zone = 'US-CAL-CISO';
+  }
+
   const apiKey = process.env.ELECTRICITY_API_KEY;
 
   if (apiKey && apiKey !== 'MY_ELECTRICITY_MAPS_API_KEY') {
@@ -18,7 +31,7 @@ export async function getCarbonIntensity(req: Request, res: Response): Promise<v
       });
       if (response.ok) {
         const data = await response.json();
-        res.json({ zone, carbonIntensity: data.carbonIntensity, isRealApi: true });
+        res.json({ zone, region: regionParam || undefined, carbonIntensity: data.carbonIntensity, isRealApi: true });
         return;
       }
     } catch (err) {
@@ -28,21 +41,25 @@ export async function getCarbonIntensity(req: Request, res: Response): Promise<v
 
   // Fallback realistic grid intensity mapping
   const mockIntensities: Record<string, number> = {
-    'US-CAL-CISO': 214,
-    'US-NW-PACW': 140,
-    'US-EAST-1': 245,
+    'US-CAL-CISO': 185,
+    'US-NW-PACW': 110,
+    'US-MIDA-PJM': 214,
+    'CA-QC': 45,
+    'US-EAST-1': 214,
     'DE': 412,
-    'IE': 230,
+    'IE': 240,
+    'SE-SE3': 25,
     'SG': 680,
     'IN-WE': 710
   };
 
   const base = mockIntensities[zone.toUpperCase()] || 250;
   const fluctuation = Math.floor(Math.random() * 10) - 5;
-  const carbonIntensity = Math.max(50, base + fluctuation);
+  const carbonIntensity = Math.max(25, base + fluctuation);
 
   res.json({
     zone,
+    region: regionParam || undefined,
     carbonIntensity,
     isRealApi: false,
     timestamp: new Date().toISOString()
