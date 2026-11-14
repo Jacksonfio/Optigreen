@@ -34,6 +34,25 @@ export const AWS_REGIONS_CATALOG: AwsRegionMetadata[] = [
   { awsRegion: 'af-south-1', regionName: 'Africa (Cape Town)', zoneKey: 'ZA', baseIntensity: 790, baseRenewable: 8, lat: -33.9, lng: 18.4 }
 ];
 
+// Live Electricity Maps Commercial / Developer API Key
+export const DEFAULT_ELECTRICITY_API_KEY = 'em_NCGEe9mtUwt6X7YwQ7fwjRy4KPZ3ADKb';
+
+export function resolveApiKey(): string {
+  const envKey = process.env.ELECTRICITY_API_KEY || process.env.ELECTRICITY_MAPS_API_KEY;
+  if (envKey && envKey !== 'YOUR_ELECTRICITY_MAPS_API_KEY' && envKey !== 'MY_ELECTRICITY_MAPS_API_KEY') {
+    return envKey;
+  }
+  return DEFAULT_ELECTRICITY_API_KEY;
+}
+
+// 5-minute in-memory cache to respect API rate limits and maintain sub-millisecond response latency
+interface CacheEntry {
+  intensity: number;
+  updatedAt: number;
+}
+const telemetryCache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
 export interface CarbonProviderStatus {
   provider: 'ELECTRICITY_MAPS_API' | 'DIURNAL_GRID_MODEL';
   mode: 'LIVE' | 'ACTIVE';
@@ -44,8 +63,8 @@ export interface CarbonProviderStatus {
 }
 
 export function getCarbonProviderStatus(): CarbonProviderStatus {
-  const apiKey = process.env.ELECTRICITY_API_KEY || process.env.ELECTRICITY_MAPS_API_KEY;
-  const isLive = Boolean(apiKey && apiKey !== 'YOUR_ELECTRICITY_MAPS_API_KEY' && apiKey !== 'MY_ELECTRICITY_MAPS_API_KEY');
+  const apiKey = resolveApiKey();
+  const isLive = Boolean(apiKey);
 
   if (isLive) {
     return {
@@ -53,7 +72,7 @@ export function getCarbonProviderStatus(): CarbonProviderStatus {
       mode: 'LIVE',
       configured: true,
       status: 'ONLINE',
-      source: 'Electricity Maps v3 Live Telemetry',
+      source: 'Electricity Maps v3 Live Telemetry (Official Live Token)',
       regionsTracked: AWS_REGIONS_CATALOG.length
     };
   }
@@ -61,7 +80,7 @@ export function getCarbonProviderStatus(): CarbonProviderStatus {
   return {
     provider: 'DIURNAL_GRID_MODEL',
     mode: 'ACTIVE',
-    configured: true,
+    configured: false,
     status: 'ONLINE',
     source: 'Green Software Foundation (GSF) Calibrated Diurnal Telemetry Model',
     regionsTracked: AWS_REGIONS_CATALOG.length
@@ -77,8 +96,14 @@ export async function getServerSideRegionIntensity(region: string): Promise<{ in
     throw new Error(`Invalid or unsupported AWS region identifier: "${region}"`);
   }
 
-  const apiKey = process.env.ELECTRICITY_API_KEY || process.env.ELECTRICITY_MAPS_API_KEY;
-  if (apiKey && apiKey !== 'YOUR_ELECTRICITY_MAPS_API_KEY' && apiKey !== 'MY_ELECTRICITY_MAPS_API_KEY') {
+  // Check 5-minute cache first
+  const cached = telemetryCache.get(reg.zoneKey);
+  if (cached && (Date.now() - cached.updatedAt < CACHE_TTL_MS)) {
+    return { intensity: cached.intensity, isLive: true, regionName: reg.regionName };
+  }
+
+  const apiKey = resolveApiKey();
+  if (apiKey) {
     try {
       const res = await fetch(`https://api.electricitymaps.com/v3/carbon-intensity/latest?zone=${reg.zoneKey}`, {
         headers: { 'auth-token': apiKey }
@@ -86,6 +111,7 @@ export async function getServerSideRegionIntensity(region: string): Promise<{ in
       if (res.ok) {
         const data = await res.json();
         if (data && typeof data.carbonIntensity === 'number') {
+          telemetryCache.set(reg.zoneKey, { intensity: data.carbonIntensity, updatedAt: Date.now() });
           return { intensity: data.carbonIntensity, isLive: true, regionName: reg.regionName };
         }
       }
@@ -120,18 +146,38 @@ export async function getAllRegionsTelemetry(): Promise<{
     dataSource: 'ELECTRICITY_MAPS_LIVE' | 'CALIBRATED_DIURNAL_MODEL';
   }>;
 }> {
-  const apiKey = process.env.ELECTRICITY_API_KEY || process.env.ELECTRICITY_MAPS_API_KEY;
+  const apiKey = resolveApiKey();
   let isRealApi = false;
   const fetchedResults: Record<string, number> = {};
 
-  if (apiKey && apiKey !== 'YOUR_ELECTRICITY_MAPS_API_KEY' && apiKey !== 'MY_ELECTRICITY_MAPS_API_KEY') {
+  // Check existing cached entries
+  const now = Date.now();
+  const missingRegions: typeof AWS_REGIONS_CATALOG = [];
+  for (const reg of AWS_REGIONS_CATALOG) {
+    const cached = telemetryCache.get(reg.zoneKey);
+    if (cached && (now - cached.updatedAt < CACHE_TTL_MS)) {
+      fetchedResults[reg.zoneKey] = cached.intensity;
+      isRealApi = true;
+    } else {
+      missingRegions.push(reg);
+    }
+  }
+
+  // Query live API for any missing or expired zones
+  if (apiKey && missingRegions.length > 0) {
     try {
-      const promises = AWS_REGIONS_CATALOG.map(reg =>
+      const promises = missingRegions.map(reg =>
         fetch(`https://api.electricitymaps.com/v3/carbon-intensity/latest?zone=${reg.zoneKey}`, {
           headers: { 'auth-token': apiKey }
         })
           .then(res => (res.ok ? res.json() : null))
-          .then(data => (data && data.carbonIntensity ? { zone: reg.zoneKey, intensity: data.carbonIntensity } : null))
+          .then(data => {
+            if (data && typeof data.carbonIntensity === 'number') {
+              telemetryCache.set(reg.zoneKey, { intensity: data.carbonIntensity, updatedAt: now });
+              return { zone: reg.zoneKey, intensity: data.carbonIntensity };
+            }
+            return null;
+          })
           .catch(() => null)
       );
 
@@ -151,8 +197,9 @@ export async function getAllRegionsTelemetry(): Promise<{
     let currentIntensity: number;
     let trend: 'up' | 'down' | 'flat' = 'flat';
 
-    if (isRealApi && fetchedResults[reg.zoneKey] !== undefined) {
+    if (fetchedResults[reg.zoneKey] !== undefined) {
       currentIntensity = fetchedResults[reg.zoneKey];
+      isRealApi = true;
     } else {
       const hour = new Date().getUTCHours();
       const solarVariation = Math.round(Math.sin(((hour - 12) / 24) * Math.PI * 2) * 12);
@@ -160,7 +207,7 @@ export async function getAllRegionsTelemetry(): Promise<{
       trend = solarVariation < 0 ? 'down' : solarVariation > 0 ? 'up' : 'flat';
     }
 
-    const hasLiveReading = isRealApi && fetchedResults[reg.zoneKey] !== undefined;
+    const hasLiveReading = fetchedResults[reg.zoneKey] !== undefined;
     const dataSource: 'ELECTRICITY_MAPS_LIVE' | 'CALIBRATED_DIURNAL_MODEL' = hasLiveReading
       ? 'ELECTRICITY_MAPS_LIVE'
       : 'CALIBRATED_DIURNAL_MODEL';
