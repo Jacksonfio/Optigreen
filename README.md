@@ -16,7 +16,7 @@
 [![Vitest](https://img.shields.io/badge/Vitest-3.2%20(90%2F90%20Passed)-729B1B?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![OptiGreen Paper](https://img.shields.io/badge/Semantic_Contract-T01--T20%20(20%2F20%20Passed)-059669?style=for-the-badge)](src/contracts/optigreenContract.ts)
 [![Durable Persistence](https://img.shields.io/badge/Storage-Local%20ACID%20Disk-10B981?style=for-the-badge&logo=sqlite&logoColor=white)](src/services/persistentDatabase.ts)
-[![Watch Video Demo](https://img.shields.io/badge/YouTube-Watch%20Video%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=C8Sewr7PyKI)
+[![Watch Video Demo](https://img.shields.io/badge/YouTube-Watch%20Video%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=oRBP14U7Qec)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 </div>
@@ -41,7 +41,7 @@ All endpoints are live on Google Cloud Run in `asia-south1`, support universal `
 | **Gemini 2.5 Flash Autonomous Tool Status** | [`https://optigreen-368696905831.asia-south1.run.app/api/gemini/status`](https://optigreen-368696905831.asia-south1.run.app/api/gemini/status) | `GET` | JSON | 🟢 Live |
 | **Runner Adapter & Execution Telemetry** | [`https://optigreen-368696905831.asia-south1.run.app/api/runner/executions`](https://optigreen-368696905831.asia-south1.run.app/api/runner/executions) | `GET` | JSON | 🟢 Live |
 | **Formal Semantic Contract Conformance** | [`https://optigreen-368696905831.asia-south1.run.app/api/optigreen/conformance`](https://optigreen-368696905831.asia-south1.run.app/api/optigreen/conformance) | `GET` | JSON | 🟢 Live |
-| **Video Walkthrough & Platform Demo** | [`https://www.youtube.com/watch?v=C8Sewr7PyKI`](https://www.youtube.com/watch?v=C8Sewr7PyKI) | Video | YouTube | 🟢 HD Demo |
+| **Video Walkthrough & Platform Demo** | [`https://www.youtube.com/watch?v=oRBP14U7Qec`](https://www.youtube.com/watch?v=oRBP14U7Qec) | Video | YouTube | 🟢 HD Demo |
 
 ---
 
@@ -215,9 +215,9 @@ Rather than asserting theoretical savings, OptiGreen's decision engine was empir
 
 ### 📺 Official Video Walkthrough & Live Demo
 
-[![Watch OptiGreen Platform Demo](https://img.youtube.com/vi/C8Sewr7PyKI/maxresdefault.jpg)](https://www.youtube.com/watch?v=C8Sewr7PyKI)
+[![Watch OptiGreen Platform Demo](https://img.youtube.com/vi/oRBP14U7Qec/maxresdefault.jpg)](https://www.youtube.com/watch?v=oRBP14U7Qec)
 
-> 🎥 **Direct Video Link:** [**https://www.youtube.com/watch?v=C8Sewr7PyKI**](https://www.youtube.com/watch?v=C8Sewr7PyKI)  
+> 🎥 **Direct Video Link:** [**https://www.youtube.com/watch?v=oRBP14U7Qec**](https://www.youtube.com/watch?v=oRBP14U7Qec)  
 > ⚡ **Demo Coverage:** Real-time GitHub webhook interception, live 17-region electricity grid telemetry, Gemini AI sustainability advisory, mathematical Pareto egress cost vs. carbon arbitrage evaluation, speculative pre-building, and tamper-evident SHA-256 CSRD ESG audit ledger verification.
 
 ---
